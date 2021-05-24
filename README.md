@@ -38,8 +38,8 @@ from each other.
 
 7. The program asks if we want to add more rotations. Type `n`.
     - If we desired to generate rotamers of our rotamers, we would type `y` instead, repeating steps 2-5.
-    - Two rotations of 60° results in `5 * 5 = 25` final rotamers.
-    - Three rotations of 60°, plus one rotation of 10° results in `5 * 5 * 5 * 36 = 4,500` final rotamers.
+    - Two rotations of 60° results in `6 * 6 = 36` final rotamers.
+    - Three rotations of 60°, plus one rotation of 10° results in `6 * 6 * 6 * 36 = 7,776` final rotamers.
     - All possible combinations of rotamers are made.
 
 
@@ -61,7 +61,7 @@ from each other.
 - Recursively search for atoms attached to the center atom, so the user doesn't have to individually add them.
 - Take inputs from Gaussian 09 .log files, so the molecule doesn't need to be hard coded.
 - Check that no bonds are formed during the rotation, and skip over the rotamer where they form.
-- [A GUI](https://puu.sh/HJ8K5/73b7ca6259.jpg)
+- A GUI. "[artist's representation](https://puu.sh/HJ8K5/73b7ca6259.jpg)"
 - Allow for individual rotations, rather than a scanned rotation.
 
 ### References used in code
