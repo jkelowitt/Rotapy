@@ -1,7 +1,7 @@
 from os import path, makedirs
 
 
-def yes_no(prompt):
+def yes_no(prompt: str) -> bool:
     """Returns True if Yes, False if No."""
     yes = ["y", "Y", "Yes", "1"]
     no = ["N", "n", "No", "0"]
@@ -19,7 +19,7 @@ def yes_no(prompt):
     return True
 
 
-def make_choice_list(choices, prompt="Select one of the following (ex. 2):", ret_num=False):
+def make_choice_list(choices: list[str], prompt: str = "Select one of the following (ex. 2):", ret_num: bool = False):
     """
     Prints a prompt and a list of choices for the user to select from.
 
@@ -61,7 +61,7 @@ def make_choice_list(choices, prompt="Select one of the following (ex. 2):", ret
     return chosen
 
 
-def make_choice_dict(choices, prompt="Select one of the following (ex. 2):", ret_num=False):
+def make_choice_dict(choices: dict, prompt: str = "Select one of the following (ex. 2):"):
     """
     Prints a prompt and a list of choices for the user to select from.
 
@@ -101,7 +101,7 @@ def make_choice_dict(choices, prompt="Select one of the following (ex. 2):", ret
     return key
 
 
-def make_output_folder(sub=""):
+def make_output_folder(sub: str = "") -> str:
     """Makes a directory in the script location to output the downloaded files"""
     # Finds the current directory
     dir_path = path.dirname(path.realpath(__file__))
@@ -115,7 +115,7 @@ def make_output_folder(sub=""):
     return dir_path
 
 
-def parse_opt_geom_from_log(file):
+def parse_opt_geom_from_log(file: str) -> list:
     """
     Given a .log file which contains an optimized geometry, extract the (x,y,z) cartesian coordinates.
 
@@ -156,17 +156,17 @@ def parse_opt_geom_from_log(file):
     return molecule
 
 
-def write_job_to_com(atoms,
-                     title="molecule_name",
-                     charge=0,
-                     multiplicity=1,
-                     job="Opt Freq",
-                     theory="B3LPY",
-                     basis_set="6-311G(2df,2p)",
-                     cores=8,
-                     memory="20gb",
-                     linda=1,
-                     output=""):
+def write_job_to_com(atoms: list,
+                     title: str = "molecule_name",
+                     charge: int = 0,
+                     multiplicity: float = 1,
+                     job: str = "Opt Freq",
+                     theory: str = "B3LPY",
+                     basis_set: str = "6-311G(2df,2p)",
+                     cores: int = 8,
+                     memory: str = "20gb",
+                     linda: int = 1,
+                     output: str = "") -> None:
     """
     Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
     and saves the coordinates to a .com file.
