@@ -234,39 +234,20 @@ def main():
     # [center_atom, ancr_atom, [rotatees], angle increments]
     rotation_queue = []
 
-    terpineol4 = [
-        Atom("C", (-2.58331, 0.18542, 0.78727)),
-        Atom("C", (-1.49342, 0.98403, 0.10143)),
-        Atom("C", (-0.52079, 0.3463, -0.54867)),
-        Atom("C", (-0.45608, -1.15397, -0.64323)),
-        Atom("C", (-2.98076, -0.99225, -0.11133)),
-        Atom("H", (-3.46138, 0.84338, 0.97013)),
-        Atom("H", (-2.21887, -0.19102, 1.76398)),
-        Atom("C", (-1.79752, -1.96948, -0.46646)),
-        Atom("H", (-3.33283, -0.51967, -1.05508)),
-        Atom("H", (-3.85532, -1.53399, 0.30359)),
-        Atom("H", (0.27309, -1.40034, 0.15905)),
-        Atom("H", (0.05029, -1.44806, -1.58445)),
-        Atom("H", (0.29548, 0.90498, -1.00359)),
-        Atom("C", (-1.4934, 2.49451, 0.16641)),
-        Atom("H", (-2.41023, 2.90359, -0.3019)),
-        Atom("H", (-0.61343, 2.92815, -0.36181)),
-        Atom("H", (-1.44175, 2.81997, 1.22555)),
-        Atom("C", (-1.52511, -3.12313, 0.5829)),
-        Atom("C", (-2.72694, -4.06503, 0.82802)),
-        Atom("H", (-3.61773, -3.53305, 1.2074)),
-        Atom("H", (-2.45837, -4.8467, 1.57175)),
-        Atom("H", (-3.00468, -4.59468, -0.11143)),
-        Atom("C", (-0.31796, -4.02392, 0.18095)),
-        Atom("H", (-1.27129, -2.6172, 1.54098)),
-        Atom("H", (-0.63396, -4.95129, -0.34384)),
-        Atom("H", (0.24809, -4.31872, 1.09036)),
-        Atom("H", (0.40451, -3.53581, -0.50107)),
-        Atom("O", (-2.09606, -2.57137, -1.70931)),
-        Atom("H", (-3.0297, -2.90858, -1.6794)),
-    ]
+    # Get all the log files in the current directory and all subdirectories.
+    files = glob("*.log")
 
-    Terpineol4 = Molecule("terpineol4", terpineol4)
+    # Check that there are log files to be found.
+    if not files:
+        print("No log files found in the current directory or lower.")
+        sys.exit()
+
+    choice = make_choice_list(files)
+    name_xyz = parse_opt_geom_from_log(choice)
+    atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in name_xyz]
+    name_molecule = input("What is the name of this compound: ")
+
+    Terpineol4 = Molecule(name_molecule, atoms)
 
     print("You're going to be asked for anchor, center, and rotation atoms.")
     print("For the example of an alcohol:")
