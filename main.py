@@ -296,7 +296,7 @@ def main():
 
         # Get rotation amount
         print(
-            f"\nThe {len(rotate_nums)} selected atom(s) will be scanned through their rotation about the axis."
+            f"\nThe {len(rotate_nums)} atom(s) attached to the center atom will be scanned through their rotation."
         )
         angle = float(
             input(f"What step size should the scan perform, in degrees (ex. 45deg -> 8 rotamers): ")
