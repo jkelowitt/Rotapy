@@ -405,15 +405,18 @@ def main():
     if save_images:
         image_output = input("What would you like to name the output directory for the image files: ")
 
-    _ = input("Press any key to save the files.")
+    # Pause for preparation and alert the user to the download file count.
+    _ = input(f"Press any key to save the {save_com_files * len(rotamers) + save_images * len(rotamers)} files.")
 
     # Perform file saving
-    for molecule in tqdm(rotamers, desc="Saving rotamer com files."):
-        write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
+    if save_com_files:
+        for molecule in tqdm(rotamers, desc="Saving rotamer com files"):
+            write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
 
     if save_images:
-        for molecule in tqdm(rotamers, desc="Saving rotamer images."):
-            molecule.plot_structure(save=True, show=False, output=image_output)
+        if save_images:
+            for molecule in tqdm(rotamers, desc="Saving rotamer images"):
+                molecule.plot_structure(save=True, show=False, output=image_output)
 
 
 if __name__ == "__main__":
