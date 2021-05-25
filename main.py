@@ -13,7 +13,6 @@ Main Changes remaining:
     - Theres a lot of faffing about switching between atom numbers and the atom itself.
         There's got to be a better way to handle this.
     - Check that no bonds break or add during the rotation. Ignore these, or put a warning on the file.
-    - Final product needs to remove all references to Terpineol4. Should be generic.
     - Bond search needs to be recursive when looking for children attached to rotating atoms.
 
 """
@@ -248,16 +247,16 @@ def main():
     choice = make_choice_list(files)
     name_xyz = parse_opt_geom_from_log(choice)
     atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in name_xyz]
-    name_molecule = input("What is the name of this compound: ")
+    molecule_name = input("What is the name of this compound: ")
 
-    Terpineol4 = Molecule(name_molecule, atoms)
+    base_compound = Molecule(molecule_name, atoms)
 
     print("You're going to be asked for anchor, center, and rotation atoms.")
     print("For the example of an alcohol:")
     print("    C ----- O ----- H    ")
     print("    ^       ^       ^    ")
     print("    Anchor  Center  Rotation\n")
-    Terpineol4.plot_structure()
+    base_compound.plot_structure()
 
     while True:
 
@@ -265,15 +264,15 @@ def main():
         center_atom_num = int(input("Which atom is the center atom (ex. 27): "))
         rot_atom_nums = input("Which atoms/fragments do you want to be rotated about this axis (ex: 14,15,16): ")
 
-        Terpineol4 = center_on_atom(Terpineol4, center_atom_num)
-        ancr_atom = Terpineol4.atoms[ancr_atom_num]
-        center_atom = Terpineol4.atoms[center_atom_num]
+        base_compound = center_on_atom(base_compound, center_atom_num)
+        ancr_atom = base_compound.atoms[ancr_atom_num]
+        center_atom = base_compound.atoms[center_atom_num]
         rotate_nums = list(map(int, rot_atom_nums.split(",")))
 
         # Get all atoms attached to the rotatees. These ones are along for the ride.
         # TODO this will need to be redone so that it looks for atoms recursively
-        rotate_atoms = [Terpineol4.atoms[num] for num in rotate_nums]
-        bonded = [Terpineol4.bonds[a] for a in rotate_atoms]
+        rotate_atoms = [base_compound.atoms[num] for num in rotate_nums]
+        bonded = [base_compound.bonds[a] for a in rotate_atoms]
         children = []
         for fragment in bonded:
             for atom in fragment:
@@ -285,7 +284,7 @@ def main():
         rotate_atoms = list(set(rotate_atoms))
 
         # Convert from Atom to number again.
-        rotate_nums = [Terpineol4.atoms.index(atom) for atom in rotate_atoms]
+        rotate_nums = [base_compound.atoms.index(atom) for atom in rotate_atoms]
 
         # Get rotation amount
         print(
@@ -315,7 +314,7 @@ def main():
         if not yes_no("Add more rotations"):
             break
 
-    rotamers = [Terpineol4]
+    rotamers = [base_compound]
 
     for rotation in rotation_queue:  # Step through the rotation queue
         counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
