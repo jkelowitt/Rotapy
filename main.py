@@ -8,8 +8,6 @@ generate Gaussian09 input files for optimization on a supercomputer. Ideally,
 multiple rotations may be performed simultaneously, such as in a nested for loop.
 
 Main Changes remaining:
-    - Get .log parsing so the the molecule doesn't have to be hard coded.
-    - Allow for writing to .com input files.
     - Theres a lot of faffing about switching between atom numbers and the atom itself.
         There's got to be a better way to handle this.
     - Check that no bonds break or add during the rotation. Ignore these, or put a warning on the file.
