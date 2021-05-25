@@ -385,7 +385,6 @@ def main():
         # Change default options if desired
         if not non_default:
             settings["Exit"] = ""
-            option = None
             while True:
                 option = make_choice_dict(settings, prompt="\nWhich would you like to change (ex. job): ")
 
