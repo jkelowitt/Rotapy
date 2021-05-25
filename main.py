@@ -58,7 +58,7 @@ class Molecule:
     def __init__(self, name: str, atoms: list):
         self.name = name
         self.atoms = atoms.copy()  # No mutability please
-        self.bonds: OrderedDict = OrderedDict().copy()
+        self.bonds: dict = dict().copy()
         self.make_bond_graph()
 
     def add_atom(self, other: Atom) -> None:
@@ -82,7 +82,7 @@ class Molecule:
         in the dictionary entry for that atom.
         """
 
-        self.bonds = OrderedDict()
+        self.bonds = dict()
         for a in self.atoms:
             new_bonds = []
             for other in self.atoms:
