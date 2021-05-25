@@ -15,7 +15,9 @@ from each other.
 
 1. Run `main.py` using Python 3.6 or higher.
 
+
 2. The program will ask for the directory of a .log Gaussian geometry optimization output file.
+
 
 3. The program asks for an Anchor Atom. This is atom `1` as shown above.
 
@@ -23,11 +25,8 @@ from each other.
 4. The program asks for a Center atom. This is atom `2` as shown above.
     - The bond between the anchor and center atoms form the axis of rotation.
     - The center atom and the anchor atom must be different atoms.
-
-
-5. The program asks for the atoms to be rotated. These atoms are the Hydrogens. They are input as `3,4,5`, with no
-   spaces between the numbers.
-    - The atoms to be rotated don't necessarily need to be bonded to the center or anchor atoms.
+    - The atoms attached to the center atom, `3, 4, 5`, will be rotated from their original position about the axis of
+      rotation.
 
 
 6. The program asks for an angle to scan through. To get rotomers with 60° increments, type `60`.
@@ -54,7 +53,7 @@ from each other.
 
 
 9. The program will ask if you want to save the rotamers to .com files, for processing, and will allow you to change the
-   values for the analysis.
+   parameters for the Gaussian analysis.
 
 
 10. The program will ask if you want to save images of the rotamers to .png files.
@@ -64,9 +63,8 @@ from each other.
 
 ## Work remaining
 
-- Recursively search for atoms attached to the center atom, so the user doesn't have to individually add them.
 - Check that no bonds are formed during the rotation, and skip over the rotamer where they form.
-- A GUI. "[artist's representation](https://puu.sh/HJ8K5/73b7ca6259.jpg)"
+- A GUI. ["artist's" representation](https://puu.sh/HJ8K5/73b7ca6259.jpg)
 - Allow for individual rotations, rather than a scanned rotation.
 
 ### References used in code
