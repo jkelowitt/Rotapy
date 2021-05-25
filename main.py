@@ -312,13 +312,7 @@ def main():
             f"\thas been added to the queue of rotations.\n"
         )
 
-        # Ask if the user wants to add more rotations
-        while True:
-            done = input("Add more rotations (y/n): ")
-            if done in ("y", "Y", "Yes", "N", "n", "No"):
-                break
-
-        if done in ("N", "n", "No"):
+        if not yes_no("Add more rotations"):
             break
 
     rotamers = [Terpineol4]
