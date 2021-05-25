@@ -351,11 +351,63 @@ def main():
 
                 new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
                 rotamers.append(new_rotamer)
-                # new_rotamer.plot_structure()
 
-    # Save images of the rotomers to png's
-    for molecule in tqdm(rotamers, desc="Saving rotamer images."):
-        molecule.plot_structure(save=True, show=False)
+    # Options on what and where to save the rotamers.
+
+    # Default save location
+    com_output = ""
+    image_output = ""
+
+    # Get saving preferences
+    save_com_files = yes_no("\nSave the rotations to .com files")
+    save_images = yes_no("Save images of the the rotations to .png files")
+
+    # Get saving locations
+    if save_com_files:
+        com_output = input("\nWhat would you like to name the output directory for the com files: ")
+
+        settings = {"charge": "0",
+                    "mul": "1",
+                    "job": "Opt Freq",
+                    "theory": "B3LPY",
+                    "basis set": "6-311G(2df,2p)",
+                    "cores": "8",
+                    "mem": "20gb",
+                    "linda": "1"}
+
+        # Display default settings
+        print("\nDefault Settings:")
+        for item in settings:
+            print(f"\t{item} = {settings[item]}")
+
+        non_default = yes_no("Use the default settings")
+
+        # Change default options if desired
+        if not non_default:
+            settings["Exit"] = ""
+            option = None
+            while True:
+                option = make_choice_dict(settings, prompt="\nWhich would you like to change (ex. job): ")
+
+                if option in ("exit", "Exit"):
+                    break
+
+                value = input("What would you like to change it to (ex. opt): ")
+                settings[option] = value
+                print(f"Changed {option} to {value}\n")
+
+    if save_images:
+        image_output = input("What would you like to name the output directory for the image files: ")
+
+    _ = input("Press any key to save the files.")
+
+    # Perform file saving
+    for molecule in tqdm(rotamers, desc="Saving rotamer com files."):
+        write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
+
+    if save_images:
+        for molecule in tqdm(rotamers, desc="Saving rotamer images."):
+            molecule.plot_structure(save=True, show=False, output=image_output)
 
 
 if __name__ == "__main__":
