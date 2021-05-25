@@ -228,6 +228,23 @@ def rotate_point_around_vector(point: tuple[float, float, float],
     return new_vec
 
 
+def bonded_atom_search(molecule, start, wall):
+    """
+    Takes in a network and returns all nodes with a path to the starting atom,
+    excluding any blocked nodes.
+    """
+    bonded = lambda x: molecule.bonds[x]
+    important = [start]
+
+    for atom in important:
+        bonds = bonded(atom)
+        for bond in bonds:
+            if bond != wall and (bond not in important):
+                important.append(bond)
+
+    return important
+
+
 def main():
     # Contains info on how to perform all desired rotations
     # Sublists have the format:
@@ -249,34 +266,27 @@ def main():
 
     base_compound = Molecule(molecule_name, atoms)
 
-    print("You're going to be asked for anchor, center, and rotation atoms.")
-    print("For the example of an alcohol:")
+    print("You're going to be asked for an anchor and a center atom.")
+    print("For the example of rotating an alcohol:")
     print("    C ----- O ----- H    ")
     print("    ^       ^       ^    ")
-    print("    Anchor  Center  Rotation\n")
+    print("    Anchor  Center  Will be rotated\n")
+
     base_compound.plot_structure()
 
     while True:
 
         ancr_atom_num = int(input("Which atom is the anchor atom (ex. 7): "))
         center_atom_num = int(input("Which atom is the center atom (ex. 27): "))
-        rot_atom_nums = input("Which atoms/fragments do you want to be rotated about this axis (ex: 14,15,16): ")
 
         base_compound = center_on_atom(base_compound, center_atom_num)
         ancr_atom = base_compound.atoms[ancr_atom_num]
         center_atom = base_compound.atoms[center_atom_num]
-        rotate_nums = list(map(int, rot_atom_nums.split(",")))
 
-        # Get all atoms attached to the rotatees. These ones are along for the ride.
-        # TODO this will need to be redone so that it looks for atoms recursively
-        rotate_atoms = [base_compound.atoms[num] for num in rotate_nums]
-        bonded = [base_compound.bonds[a] for a in rotate_atoms]
-        children = []
-        for fragment in bonded:
-            for atom in fragment:
-                if atom not in (ancr_atom, center_atom):
-                    children.append(atom)
-        rotate_atoms += children
+        # All things attached to the center atom will be rotated.
+        # The first atom is the center atom. Remove it to prevent numbering confusion.
+        rotate_atoms = bonded_atom_search(base_compound, start=center_atom, wall=ancr_atom)[1:]
+
 
         # Remove duplicates (and order btw)
         rotate_atoms = list(set(rotate_atoms))
