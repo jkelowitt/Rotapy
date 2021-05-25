@@ -9,3 +9,6 @@
 /.mypy_cache/
 /.idea/
 /*.com
+/venv/Lib/site-packages/
+/venv/Scripts/
+/venv/pyvenv.cfg
