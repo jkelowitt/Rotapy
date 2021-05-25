@@ -18,9 +18,9 @@ Main Changes remaining:
 
 """
 
+import sys
 from dataclasses import dataclass, field
 from glob import glob
-import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
