@@ -16,10 +16,8 @@ Main Changes remaining:
     - Final product needs to remove all references to Terpineol4. Should be generic.
     - Bond search needs to be recursive when looking for children attached to rotating atoms.
 
-
 """
 
-from collections import OrderedDict
 from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
@@ -233,7 +231,7 @@ def rotate_point_around_vector(point: tuple[float, float, float],
 def main():
     # Contains info on how to perform all desired rotations
     # Sublists have the format:
-    # [center_atom, ancr_atom, rotatees, angle increments]
+    # [center_atom, ancr_atom, [rotatees], angle increments]
     rotation_queue = []
 
     terpineol4 = [
@@ -289,6 +287,7 @@ def main():
         rotate_nums = list(map(int, rot_atom_nums.split(",")))
 
         # Get all atoms attached to the rotatees. These ones are along for the ride.
+        # TODO this will need to be redone so that it looks for atoms recursively
         rotate_atoms = [Terpineol4.atoms[num] for num in rotate_nums]
         bonded = [Terpineol4.bonds[a] for a in rotate_atoms]
         children = []
@@ -351,7 +350,8 @@ def main():
                 # Center the molecule on the center atom
                 new_rotamer = center_on_atom(rotamers[count], rotation["center"])
 
-                print(f"{new_rotamer.name}__a{rotation['ancr']}-c{rotation['center']}-{turn}deg")
+                # Print the title of the file being rotated
+                # print(f"{new_rotamer.name}__a{rotation['ancr']}-c{rotation['center']}-{turn}deg")
 
                 # Get the ancr atom to represent the axis of rotation
                 ancr_atom = new_rotamer.atoms[rotation["ancr"]]
@@ -367,7 +367,7 @@ def main():
                     # Add the new atom to the finished atoms list
                     rotated.append(Atom(atom.name, new_pos))
 
-                # Replace the unrotated atoms with the rotated atoms
+                # Replace the un-rotated atoms with the rotated atoms
                 for old, new in zip(rotation["rotatees"], rotated):
                     new_rotamer.replace_atom(old, new)
 
