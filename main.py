@@ -92,7 +92,7 @@ class Molecule:
 
             self.bonds[a] = list(new_bonds).copy()
 
-    def plot_structure(self, title=None, save=False, show=True) -> None:
+    def plot_structure(self, title=None, save=False, show=True, output="") -> None:
         """
         Plots the structure of the Molecule in 3d.
         The atoms are colored according to the color_dict in __post_init__.
@@ -155,14 +155,14 @@ class Molecule:
         ax.set_box_aspect([ub - lb for lb, ub in (getattr(ax, f"get_{a}lim")() for a in "xyz")])
 
         if save:
+            directory = make_output_folder(output)
             if title:
-                plt.savefig(f"frames/Terpineol 5 rotations all 60/{title}.png")
+                plt.savefig(f"{directory}/{title}.png")
             else:
-                plt.savefig(f"frames/Terpineol 5 rotations all 60/{self.name}.png")
+                plt.savefig(f"{directory}/{self.name}.png")
         if show:
             if title:
                 plt.title(title)
-                plt.show()
             else:
                 plt.title(self.name)
                 plt.show()
