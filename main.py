@@ -10,8 +10,7 @@ multiple rotations may be performed simultaneously, such as in a nested for loop
 Main Changes remaining:
     - Theres a lot of faffing about switching between atom numbers and the atom itself.
         There's got to be a better way to handle this.
-    - Check that no bonds break or add during the rotation. Ignore these, or put a warning on the file.
-    - Bond search needs to be recursive when looking for children attached to rotating atoms.
+    - Check that no bonds break or add during the rotation.
 
 """
 
@@ -25,7 +24,9 @@ import pyquaternion as pq
 from tqdm import tqdm
 
 from data_dicts import cov_rads, bond_threshold
-from parsing import *
+from parsing import make_output_folder, make_choice_list, \
+    yes_no, parse_opt_geom_from_log, make_choice_dict, \
+    write_job_to_com
 
 
 @dataclass(eq=True, unsafe_hash=True)
@@ -246,6 +247,20 @@ def bonded_atom_search(molecule, start, wall):
 
 
 def main():
+    """
+    Main program function
+
+    Asks the user for the file they want to make rotamers out of.
+    Asks the user for the anchor atom
+    Asks the user for the center atom
+    Asks the user for the rotation angle step size
+    Asks the user if they'd like to add more rotations
+    Asks the user if they want to save generated .com files
+    Asks the user if they want to save generated .png files
+    Performs the rotations, and saves any specified files.
+
+    """
+
     # Contains info on how to perform all desired rotations
     # Sublists have the format:
     # [center_atom, ancr_atom, [rotatees], angle increments]
