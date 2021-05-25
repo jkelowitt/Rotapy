@@ -287,7 +287,6 @@ def main():
         # The first atom is the center atom. Remove it to prevent numbering confusion.
         rotate_atoms = bonded_atom_search(base_compound, start=center_atom, wall=ancr_atom)[1:]
 
-
         # Remove duplicates (and order btw)
         rotate_atoms = list(set(rotate_atoms))
 
