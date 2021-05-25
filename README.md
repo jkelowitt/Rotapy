@@ -53,13 +53,18 @@ from each other.
             - The atoms on the 18th atom rotated by 180° about the axis formed between the 17th and 18th atom.
 
 
-9. The program will generate .com files for each of the rotamers, ready to be run in Gaussian.
+9. The program will ask if you want to save the rotamers to .com files, for processing, and will allow you to change the
+   values for the analysis.
+
+
+10. The program will ask if you want to save images of the rotamers to .png files.
+
+
+11. The program gives one final warning, then performs the saving of .com and .png files to designated directories.
 
 ## Work remaining
 
-- Allow the user to specify the parameters of the geometry optimization, such as basis-set, theory, n-cores, etc.
 - Recursively search for atoms attached to the center atom, so the user doesn't have to individually add them.
-- Take inputs from Gaussian 09 .log files, so the molecule doesn't need to be hard coded.
 - Check that no bonds are formed during the rotation, and skip over the rotamer where they form.
 - A GUI. "[artist's representation](https://puu.sh/HJ8K5/73b7ca6259.jpg)"
 - Allow for individual rotations, rather than a scanned rotation.
