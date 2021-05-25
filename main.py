@@ -165,7 +165,7 @@ class Molecule:
                 plt.title(title)
             else:
                 plt.title(self.name)
-                plt.show()
+            plt.show()
 
         plt.close()
 
@@ -305,7 +305,7 @@ def main():
         print(
             f"\nThe rotation of {len(rotate_nums)} atoms,\n"
             f"\tabout the {center_atom_num},{ancr_atom_num} atom bond axis,\n"
-            f"\twith a total of {len(degrees)+1}, {angle} degree rotations,\n"
+            f"\twith a total of {len(degrees) + 1}, {angle} degree rotations,\n"
             f"\thas been added to the queue of rotations.\n"
         )
 
