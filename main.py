@@ -428,9 +428,8 @@ def main():
             write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
 
     if save_images:
-        if save_images:
-            for molecule in tqdm(rotamers, desc="Saving rotamer images"):
-                molecule.plot_structure(save=True, show=False, output=image_output)
+        for molecule in tqdm(rotamers, desc="Saving rotamer images"):
+            molecule.plot_structure(save=True, show=False, output=image_output)
 
 
 if __name__ == "__main__":
