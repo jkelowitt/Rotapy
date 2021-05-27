@@ -1,4 +1,4 @@
-from os import path, makedirs
+from os import path, makedirs, getcwd
 
 
 def yes_no(prompt: str) -> bool:
@@ -70,7 +70,6 @@ def make_choice_dict(choices: dict, prompt: str = "Select one of the following (
 
     choices: Dictionary of printable keys and values for the user to choose from.
     prompt: The question to ask the user prior to showing the list of choices.
-    ret_num: Whether to return the index of the choice, rather than the actual item in choices.
 
     Returns
     -------
@@ -104,7 +103,7 @@ def make_choice_dict(choices: dict, prompt: str = "Select one of the following (
 def make_output_folder(sub: str = "") -> str:
     """Makes a directory in the script location to output the downloaded files"""
     # Finds the current directory
-    dir_path = path.dirname(path.realpath(__file__))
+    dir_path = getcwd()
 
     # Makes the path for the new folder
     dir_path = dir_path + fr"\{sub}"
