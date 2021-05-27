@@ -287,10 +287,11 @@ def main():
     print("    ^       ^       ^    ")
     print("    Anchor  Center  Will be rotated\n")
 
-    base_compound.plot_structure()
+    # Ask before shwoing plot
+    if yes_no("View numbered structure:"):
+        base_compound.plot_structure()
 
     while True:
-
         ancr_atom_num = int(input("Which atom is the anchor atom (ex. 7): "))
         center_atom_num = int(input("Which atom is the center atom (ex. 27): "))
 
