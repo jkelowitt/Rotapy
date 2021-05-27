@@ -19,7 +19,9 @@ def yes_no(prompt: str) -> bool:
     return True
 
 
-def make_choice_list(choices: list[str], prompt: str = "Select one of the following (ex. 2):", ret_num: bool = False):
+def make_choice_list(choices: list[str],
+                     prompt: str = "Select one of the following (ex. 2):",
+                     ret_num: bool = False):
     """
     Prints a prompt and a list of choices for the user to select from.
 
@@ -95,7 +97,9 @@ def make_choice_dict(choices: dict, prompt: str = "Select one of the following (
             value = choices[selection]  # Will error out if selection is not in choices.
             break
         except KeyError:
-            print("That is not a valid selection. Please type out the full name of the item to be changed.")
+            print(
+                "That is not a valid selection. Please type out the full name of the item to be changed."
+            )
 
     return key
 
@@ -153,25 +157,29 @@ def parse_opt_geom_from_log(file: str) -> list:
             new_entry = [name, x, y, z]
             molecule.append(new_entry)
         except IndexError:
-            print("The file was formatted in an unexpected way. "
-                  "Please send the author a copy of the file you are running.")
+            print(
+                "The file was formatted in an unexpected way. "
+                "Please send the author a copy of the file you are running."
+            )
             # The last item in the list of molecules is sometimes empty
             pass
 
     return molecule
 
 
-def write_job_to_com(atoms: list,
-                     title: str = "molecule_name",
-                     charge: int = 0,
-                     multiplicity: float = 1,
-                     job: str = "Opt Freq",
-                     theory: str = "B3LPY",
-                     basis_set: str = "6-311G(2df,2p)",
-                     cores: int = 8,
-                     memory: str = "20gb",
-                     linda: int = 1,
-                     output: str = "") -> None:
+def write_job_to_com(
+    atoms: list,
+    title: str = "molecule_name",
+    charge: int = 0,
+    multiplicity: float = 1,
+    job: str = "Opt Freq",
+    theory: str = "B3LPY",
+    basis_set: str = "6-311G(2df,2p)",
+    cores: int = 8,
+    memory: str = "20gb",
+    linda: int = 1,
+    output: str = "",
+    ) -> None:
     """
     Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
     and saves the coordinates to a .com file.
