@@ -31,7 +31,7 @@ module load g09
 /fslapps/gaussian09/B.01/EM64T/g09/g09 < "{5}.com" > "{5}.log"
 
 echo "---------------------------------------------------------"
-echo "JOB END TIME: $(date)
+echo "JOB END TIME: $(date)"
 echo "---------------------------------------------------------"
 exit EXIT_CODE=$?
 #echo $EXIT_CODE
@@ -90,4 +90,3 @@ else:
 
         # Submitting to bash
         os.system(f"sbatch {filename}.sh")
-
