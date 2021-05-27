@@ -24,9 +24,14 @@ import pyquaternion as pq
 from tqdm import tqdm
 
 from data_dicts import cov_rads, bond_threshold
-from parsing import make_output_folder, make_choice_list, \
-    yes_no, parse_opt_geom_from_log, make_choice_dict, \
-    write_job_to_com
+from parsing import (
+    make_output_folder,
+    make_choice_list,
+    yes_no,
+    parse_opt_geom_from_log,
+    make_choice_dict,
+    write_job_to_com,
+)
 
 
 @dataclass(eq=True, unsafe_hash=True)
@@ -180,8 +185,7 @@ class Molecule:
         self.make_bond_graph()
 
 
-def center_on_atom(mo: Molecule,
-                   atom_number: int) -> Molecule:
+def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
     """
     Translates the coordinates of all atoms in the mo so that
         the selected atom is at the origin.
@@ -202,8 +206,7 @@ def center_on_atom(mo: Molecule,
     return new_mo
 
 
-def distance(pt1: tuple[float, float, float],
-             pt2: tuple[float, float, float]) -> float:
+def distance(pt1: tuple[float, float, float], pt2: tuple[float, float, float]) -> float:
     """Returns the distance between two points (x, y, z) in 3D"""
     return np.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
 
@@ -388,14 +391,16 @@ def main():
     if save_com_files:
         com_output = input("\nWhat would you like to name the output directory for the com files: ")
 
-        settings = {"charge": "0",
-                    "mul": "1",
-                    "job": "Opt Freq",
-                    "theory": "B3LPY",
-                    "basis set": "6-311G(2df,2p)",
-                    "cores": "8",
-                    "mem": "20gb",
-                    "linda": "1"}
+        settings = {
+            "charge": "0",
+            "mul": "1",
+            "job": "Opt Freq",
+            "theory": "B3LPY",
+            "basis set": "6-311G(2df,2p)",
+            "cores": "8",
+            "mem": "20gb",
+            "linda": "1",
+        }
 
         # Display default settings
         print("\nDefault Settings:")
@@ -408,7 +413,9 @@ def main():
         if not non_default:
             settings["Exit"] = ""
             while True:
-                option = make_choice_dict(settings, prompt="\nWhich would you like to change (ex. job): ")
+                option = make_choice_dict(
+                    settings, prompt="\nWhich would you like to change (ex. job): "
+                )
 
                 if option in ("exit", "Exit"):
                     break
@@ -418,10 +425,14 @@ def main():
                 print(f"Changed {option} to {value}\n")
 
     if save_images:
-        image_output = input("What would you like to name the output directory for the image files: ")
+        image_output = input(
+            "What would you like to name the output directory for the image files: "
+        )
 
     # Pause for preparation and alert the user to the download file count.
-    _ = input(f"Press any key to save the {save_com_files * len(rotamers) + save_images * len(rotamers)} files.")
+    _ = input(
+        f"Press any key to save the {save_com_files * len(rotamers) + save_images * len(rotamers)} files."
+    )
 
     # Perform file saving
     if save_com_files:
