@@ -138,19 +138,25 @@ def parse_opt_geom_from_log(file: str) -> list:
         result_string += line.replace("\n", "").replace(" ", "")
 
     # Split the data into the \'ed chunks, and remove everything which isn't the cartesian coordinates
-    data = result_string.split("\\")[16:-11]
+    chunks = result_string.split("\\\\")
+    data = chunks[3].split("\\")[1:]  # Ignore the charge/multiplicity
 
     molecule = []
     for entry in data:
-        a = entry.split(",")
+        try:
+            a = entry.split(",")
+            name = a[0]
+            x = float(a[1])
+            y = float(a[2])
+            z = float(a[3])
 
-        name = a[0]
-        x = float(a[1])
-        y = float(a[2])
-        z = float(a[3])
-
-        new_entry = [name, x, y, z]
-        molecule.append(new_entry)
+            new_entry = [name, x, y, z]
+            molecule.append(new_entry)
+        except IndexError:
+            print("The file was formatted in an unexpected way. "
+                  "Please send the author a copy of the file you are running.")
+            # The last item in the list of molecules is sometimes empty
+            pass
 
     return molecule
 
