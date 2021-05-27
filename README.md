@@ -1,5 +1,7 @@
 # Rotapy
 
+![Logo](https://i.imgur.com/59TSCMn.png)
+
 ### Purpose
 
 Generate Gaussian 09 input files for the rotamers of an input compound.
@@ -13,7 +15,7 @@ from each other.
 
 ![Image](https://i.imgur.com/e2AES96.png)
 
-1. Run `Rotapy.py` using Python 3.6 or higher.
+1. Run `Rotapy.py` using Python 3.6 or higher, or the `.exe`, run the `.exe`, in the same directory as your .log files.
 
 
 2. The program will ask for the directory of a .log Gaussian geometry optimization output file.
