@@ -11,3 +11,6 @@
 /venv/Lib/site-packages/
 /venv/Scripts/
 /venv/pyvenv.cfg
+/*.spec
+/build/
+/dist/
