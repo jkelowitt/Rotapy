@@ -197,7 +197,8 @@ def write_job_to_com(atoms: list,
         x = str(a.pos[0])[:14].rjust(15)
         y = str(a.pos[1])[:14].rjust(15)
         z = str(a.pos[2])[:14].rjust(15)
-        d += f"\n{name} {x} {y} {z}"
+        d += f"{name} {x} {y} {z}\n"
+    d += "\n"  # Two empty rows are required
 
     directory = make_output_folder(output)
 
