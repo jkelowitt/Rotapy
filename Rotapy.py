@@ -17,261 +17,16 @@ Main Changes remaining:
 import sys
 from dataclasses import dataclass, field
 from glob import glob
-from os import path, makedirs
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pyquaternion as pq
 from tqdm import tqdm
 
-"""
-Dictionaries containing useful data for elements.
-
-Dictionaries:
-    - cov_rads: Covalent Radii
-    - at_masses: Atomic Masses
-
-Taken from TMPChem's Computational Chemistry github page:
-https://github.com/tmpchem/computational_chemistry
-"""
-
-# Margin of error on whether or not to make a bond
-# Chosen arbitrarily.
-bond_threshold = 1.2
-
-# Covalent (or ionic) radii by atomic element (Angstroms) from
-# "Inorganic Chemistry" 3rd ed, Housecroft, Appendix 6, pgs 1013-1014
-cov_rads = {'H': 0.37, 'C': 0.77, 'O': 0.73, 'N': 0.75, 'F': 0.71,
-            'P': 1.10, 'S': 1.03, 'Cl': 0.99, 'Br': 1.14, 'I': 1.33, 'He': 0.30,
-            'Ne': 0.84, 'Ar': 1.00, 'Li': 1.02, 'Be': 0.27, 'B': 0.88, 'Na': 1.02,
-            'Mg': 0.72, 'Al': 1.30, 'Si': 1.18, 'K': 1.38, 'Ca': 1.00, 'Sc': 0.75,
-            'Ti': 0.86, 'V': 0.79, 'Cr': 0.73, 'Mn': 0.67, 'Fe': 0.61, 'Co': 0.64,
-            'Ni': 0.55, 'Cu': 0.46, 'Zn': 0.60, 'Ga': 1.22, 'Ge': 1.22, 'As': 1.22,
-            'Se': 1.17, 'Kr': 1.03, 'X': 0.00}
-
-# Relative atomic masses of elements (in atomic mass units [amu]) from
-# "CRC Handbook" 84th ed, ed Lide, pgs 1-12 - 1-14
-at_masses = {'H': 1.00794, 'C': 12.0107, 'O': 15.9994, 'N': 14.0067,
-             'F': 18.9984, 'P': 30.9738, 'S': 32.0650, 'Cl': 35.4530, 'Br': 79.9040,
-             'I': 126.904, 'He': 4.00260, 'Ne': 20.1797, 'Ar': 39.9480, 'Li': 6.94100,
-             'Be': 9.01218, 'B': 10.8110, 'Na': 22.9898, 'Mg': 24.3050, 'Al': 26.9815,
-             'Si': 28.0855, 'K': 39.0983, 'Ca': 40.0780, 'Sc': 44.9559, 'Ti': 47.8670,
-             'V': 50.9415, 'Cr': 51.9961, 'Mn': 54.9380, 'Fe': 55.8450, 'Co': 58.9332,
-             'Ni': 58.6934, 'Cu': 63.5460, 'Zn': 65.4090, 'Ga': 69.7230, 'Ge': 72.6400,
-             'As': 74.9216, 'Se': 78.9600, 'Kr': 83.7980, 'X': 0.00000}
-
-"""
-Functions whose main purpose is to parse data from files or the user. 
-"""
-
-
-def yes_no(prompt: str) -> bool:
-    """Returns True if Yes, False if No."""
-    yes = ["y", "Y", "Yes", "1"]
-    no = ["N", "n", "No", "0"]
-
-    while True:
-        done = input(f"{prompt} (y/n): ")
-        if done in yes + no:
-            break
-
-    # If no
-    if done in no:
-        return False
-
-    # If yes
-    return True
-
-
-def make_choice_list(choices: list[str], prompt: str = "Select one of the following (ex. 2):", ret_num: bool = False):
-    """
-    Prints a prompt and a list of choices for the user to select from.
-
-    Parameters
-    ----------
-
-    choices: List of printable objects for the user to choose from.
-    prompt: The question to ask the user prior to showing the list of choices.
-    ret_num: Whether to return the index of the choice, rather than the actual item in choices.
-
-    Returns
-    -------
-    If ret_num == False
-        The item in the list which the person selected.
-    If ret_num == True
-        The index of the user's choice within the list.
-    """
-    print(prompt)
-    for n, item in enumerate(choices):
-        print(f"{n + 1}) {item}")
-
-    # Ensure that the input is valid.
-    while True:
-        try:
-            selection = int(input("Selection: "))
-
-            # Check that the selection is within the range of the list.
-            assert 1 <= selection <= len(choices)
-            chosen = choices[selection - 1]
-            break
-
-        except ValueError:
-            print("The selection must be an integer.")
-        except AssertionError:
-            print("The selection is not an option in the list.")
-    if ret_num:
-        return selection - 1
-
-    return chosen
-
-
-def make_choice_dict(choices: dict, prompt: str = "Select one of the following (ex. 2):"):
-    """
-    Prints a prompt and a list of choices for the user to select from.
-
-    Parameters
-    ----------
-
-    choices: Dictionary of printable keys and values for the user to choose from.
-    prompt: The question to ask the user prior to showing the list of choices.
-
-    Returns
-    -------
-    If ret_num == False
-        The item in the list which the person selected.
-    If ret_num == True
-        The index of the user's choice within the list.
-    """
-    print(prompt)
-    for n, item in enumerate(choices):
-        print(f"{item} = {choices[item]}")
-
-    print("Exit")
-
-    # Ensure that the input is valid.
-    while True:
-        selection = input("Selection: ")
-        try:
-            key = selection
-            if selection in ("exit", "Exit"):
-                return key
-
-            value = choices[selection]  # Will error out if selection is not in choices.
-            break
-        except KeyError:
-            print("That is not a valid selection. Please type out the full name of the item to be changed.")
-
-    return key
-
-
-def make_output_folder(sub: str = "") -> str:
-    """Makes a directory in the script location to output the downloaded files"""
-    # Finds the current directory
-    dir_path = path.dirname(path.realpath(__file__))
-
-    # Makes the path for the new folder
-    dir_path = dir_path + fr"\{sub}"
-
-    # If the folder doesn't exist, make it.
-    if not path.exists(dir_path):
-        makedirs(dir_path)
-    return dir_path
-
-
-def parse_opt_geom_from_log(file: str) -> list:
-    """
-    Given a .log file which contains an optimized geometry, extract the (x,y,z) cartesian coordinates.
-
-    Returns the atoms in the format:
-    [["Atom 1 name", X_coord, Y_coord, Z_coord],
-    ["Atom 2 name", X_coord, Y_coord, Z_coord]
-    ...
-    ]
-    """
-
-    # Read the data from the file
-    with open(file, "r+") as f:
-        lines = f.readlines()  # Caution, files may be very /very/ large.
-
-    # The cartesian data is the only data in the file which contains a \
-    result_data = [line for line in lines if "\\" in line]
-
-    # Combine the lines into a single line
-    result_string = ""
-    for line in result_data:
-        result_string += line.replace("\n", "").replace(" ", "")
-
-    # Split the data into the \'ed chunks, and remove everything which isn't the cartesian coordinates
-    data = result_string.split("\\")[16:-11]
-
-    molecule = []
-    for entry in data:
-        a = entry.split(",")
-
-        name = a[0]
-        x = float(a[1])
-        y = float(a[2])
-        z = float(a[3])
-
-        new_entry = [name, x, y, z]
-        molecule.append(new_entry)
-
-    return molecule
-
-
-def write_job_to_com(atoms: list,
-                     title: str = "molecule_name",
-                     charge: int = 0,
-                     multiplicity: float = 1,
-                     job: str = "Opt Freq",
-                     theory: str = "B3LPY",
-                     basis_set: str = "6-311G(2df,2p)",
-                     cores: int = 8,
-                     memory: str = "20gb",
-                     linda: int = 1,
-                     output: str = "") -> None:
-    """
-    Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
-    and saves the coordinates to a .com file.
-
-    The user may specify:
-        The jobs to be performed
-        The level of theory to use
-        The basis set to run
-        The number of cores to use
-        The amount of memory to use
-        Whether or not to use a checkpoint
-        How many linda cores to use (set to 1 even if not being used)
-        The output directory for the file
-    """
-
-    d = f"""\
-%NProcShared={cores}
-%NProcLinda={linda}
-%mem={memory}
-%Chk={title}.chk
-#n {theory}/{basis_set} {job}
-
-{title}
-
-{charge} {multiplicity}
-"""
-    for a in atoms:
-        name = str(a.name)
-        x = str(a.pos[0])[:14].rjust(15)
-        y = str(a.pos[1])[:14].rjust(15)
-        z = str(a.pos[2])[:14].rjust(15)
-        d += f"\n{name} {x} {y} {z}"
-
-    directory = make_output_folder(output)
-
-    with open(fr"{directory}\{title}.com", "w+") as file:
-        file.write(d)
-
-
-"""
-Classes used for structuring out the data
-"""
+from data_dicts import cov_rads, bond_threshold
+from parsing import make_output_folder, make_choice_list, \
+    yes_no, parse_opt_geom_from_log, make_choice_dict, \
+    write_job_to_com
 
 
 @dataclass(eq=True, unsafe_hash=True)
@@ -516,7 +271,7 @@ def main():
 
     # Check that there are log files to be found.
     if not files:
-        print("No log files found in the current directory or lower.")
+        input("No log files found in the current directory or lower.")
         sys.exit()
 
     choice = make_choice_list(files)
@@ -573,9 +328,9 @@ def main():
 
         print(
             f"\nThe rotation of {len(rotate_nums)} atoms,\n"
-            f"\tabout the {center_atom_num},{ancr_atom_num} atom bond axis,\n"
-            f"\twith a total of {len(degrees) + 1}, {angle} degree rotations,\n"
-            f"\thas been added to the queue of rotations.\n"
+            f"\t about the {center_atom_num},{ancr_atom_num} atom bond axis,\n"
+            f"\t with a total of {len(degrees) + 1}, {angle} degree rotations,\n"
+            f"\t has been added to the queue of rotations.\n"
         )
 
         if not yes_no("Add more rotations"):

@@ -13,7 +13,7 @@ from each other.
 
 ![Image](https://i.imgur.com/e2AES96.png)
 
-1. Run `main.py` using Python 3.6 or higher.
+1. Run `Rotapy.py` using Python 3.6 or higher.
 
 
 2. The program will ask for the directory of a .log Gaussian geometry optimization output file.
