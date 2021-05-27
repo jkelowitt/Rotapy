@@ -7,12 +7,10 @@
 /frames/
 /.mypy_cache/
 /.idea/
-/*.com
-/*.log
-/venv/Lib/site-packages/
-/venv/Scripts/
-/venv/pyvenv.cfg
+*.com
+*.log
+/venv
 /*.spec
 /build/
 /dist/
-installation_script.txt
+/installation_script.txt
