@@ -347,43 +347,7 @@ def main():
 
     rotamers = [base_compound]
 
-    for rotation in rotation_queue:  # Step through the rotation queue
-        counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
-        for count in range(counter):  # Step through the molecule list
-            for turn in rotation["angles"]:  # Step through the angles to be performed
-
-                # Rotated atoms
-                rotated = []
-
-                # Center the molecule on the center atom
-                new_rotamer = center_on_atom(rotamers[count], rotation["center"])
-
-                # Print the title of the file being rotated
-                # print(f"{new_rotamer.name}__a{rotation['ancr']}-c{rotation['center']}-{turn}deg")
-
-                # Get the ancr atom to represent the axis of rotation
-                ancr_atom = new_rotamer.atoms[rotation["ancr"]]
-
-                # For every atom we want to rotate around this particular axis
-                for atom_num in rotation["rotatees"]:
-                    # Get the atom to be rotated
-                    atom = new_rotamer.atoms[atom_num]
-
-                    # Find it's new position
-                    new_pos = rotate_point_around_vector(atom.pos, ancr_atom.pos, turn)
-
-                    # Add the new atom to the finished atoms list
-                    rotated.append(Atom(atom.name, new_pos))
-
-                # Replace the un-rotated atoms with the rotated atoms
-                for old, new in zip(rotation["rotatees"], rotated):
-                    new_rotamer.replace_atom(old, new)
-
-                new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
-                rotamers.append(new_rotamer)
-
     # Options on what and where to save the rotamers.
-
     # Default save location
     com_output = ""
     image_output = ""
@@ -438,6 +402,44 @@ def main():
     _ = input(
         f"Press any key to save the {save_com_files * len(rotamers) + save_images * len(rotamers)} files."
     )
+
+    # Perform rotation calculations
+    with tqdm(total=rotation_count, desc="Performing rotation calculations") as pbar:
+        for rotation in rotation_queue:  # Step through the rotation queue
+            counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
+            for count in range(counter):  # Step through the molecule list
+                for turn in rotation["angles"]:  # Step through the angles to be performed
+
+                    # Rotated atoms
+                    rotated = []
+
+                    # Center the molecule on the center atom
+                    new_rotamer = center_on_atom(rotamers[count], rotation["center"])
+
+                    # Print the title of the file being rotated
+                    # print(f"{new_rotamer.name}__a{rotation['ancr']}-c{rotation['center']}-{turn}deg")
+
+                    # Get the ancr atom to represent the axis of rotation
+                    ancr_atom = new_rotamer.atoms[rotation["ancr"]]
+
+                    # For every atom we want to rotate around this particular axis
+                    for atom_num in rotation["rotatees"]:
+                        # Get the atom to be rotated
+                        atom = new_rotamer.atoms[atom_num]
+
+                        # Find it's new position
+                        new_pos = rotate_point_around_vector(atom.pos, ancr_atom.pos, turn)
+
+                        # Add the new atom to the finished atoms list
+                        rotated.append(Atom(atom.name, new_pos))
+
+                    # Replace the un-rotated atoms with the rotated atoms
+                    for old, new in zip(rotation["rotatees"], rotated):
+                        new_rotamer.replace_atom(old, new)
+
+                    new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
+                    rotamers.append(new_rotamer)
+                    pbar.update(1)
 
     # Perform file saving
     if save_com_files:
