@@ -208,16 +208,11 @@ class Molecule:
         ax.set_box_aspect([ub - lb for lb, ub in (getattr(ax, f"get_{a}lim")() for a in "xyz")])
 
         if save:
-            directory = make_output_folder(output)
-            if title:
-                plt.savefig(f"{directory}/{title}.png")
-            else:
-                plt.savefig(f"{directory}/{self.name}.png")
+            directory = f"{make_output_folder(output)}/{title if title else self.name}.png"
+            plt.savefig(directory)
+
         if show:
-            if title:
-                plt.title(title)
-            else:
-                plt.title(self.name)
+            plt.title(title if title else self.name)
             plt.show()
 
         plt.close()
