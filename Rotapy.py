@@ -399,8 +399,8 @@ def main():
         )
 
     # Pause for preparation and alert the user to the download file count.
-    _ = input(
-        f"Press any key to save the {save_com_files * len(rotamers) + save_images * len(rotamers)} files."
+    input(
+        f"\nPress enter to perform the {rotation_count} rotations and save the files."
     )
 
     # Perform rotation calculations
