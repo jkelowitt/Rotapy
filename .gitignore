@@ -13,4 +13,4 @@
 /*.spec
 /build/
 /dist/
-/installation_script.txt
+/build_script.py
