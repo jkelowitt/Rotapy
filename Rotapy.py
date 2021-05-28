@@ -376,7 +376,7 @@ def main():
         for item in settings:
             print(f"\t{item} = {settings[item]}")
 
-        non_default = yes_no("Use the default settings")
+        non_default = yes_no("\nUse the default settings")
 
         # Change default options if desired
         if not non_default:
