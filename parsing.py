@@ -33,15 +33,17 @@ def make_choice_list(choices: list[str],
 
     Parameters
     ----------
-
     choices: List of printable objects for the user to choose from.
+
     prompt: The question to ask the user prior to showing the list of choices.
+
     ret_num: Whether to return the index of the choice, rather than the actual item in choices.
 
     Returns
     -------
     If ret_num == False
         The item in the list which the person selected.
+
     If ret_num == True
         The index of the user's choice within the list.
     """
@@ -78,12 +80,14 @@ def make_choice_dict(choices: dict,
     ----------
 
     choices: Dictionary of printable keys and values for the user to choose from.
+
     prompt: The question to ask the user prior to showing the list of choices.
 
     Returns
     -------
     If ret_num == False
         The item in the list which the person selected.
+
     If ret_num == True
         The index of the user's choice within the list.
     """
@@ -209,15 +213,25 @@ def write_job_to_com(
     Parameters
     ----------
     atoms: The atoms to be written
+
     title: The title for the file
+
     charge: The overall charge on the molecule
+
     multiplicity: The multiplicity of the atom
+
     job: The jobs to be performed in the file (Opt Freq)
+
     theory: The level of theory to use
+
     basis_set: The basis set to run
+
     cores: The number of cores to use
+
     memory: The amount of memory to use
+
     linda: How many linda cores to use (set to 1 even if not being used)
+
     output: The output directory for the file
     """
 
