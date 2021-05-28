@@ -18,6 +18,7 @@ import sys
 from dataclasses import dataclass, field
 from glob import glob
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pyquaternion as pq
@@ -155,6 +156,12 @@ class Molecule:
         Double and triple bonds are not shown.
         """
 
+        # Prevent memory leak when saving many figures.
+        if save:
+            matplotlib.use('agg')
+        else:
+            matplotlib.use('Qt5Agg')
+
         # Regenerate the bonds in case any new atoms have been added.
         self.make_bond_graph()
 
@@ -215,7 +222,8 @@ class Molecule:
             plt.title(title if title else self.name)
             plt.show()
 
-        plt.close()
+        # Try to remove the figures from memory.
+        plt.close('all')
 
 
 def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
