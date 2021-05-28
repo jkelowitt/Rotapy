@@ -36,7 +36,7 @@ from parsing import (make_output_folder,
 class Atom:
     """
     Data class containing all the pertinent information about an atom.
-    eq = True: allows the comparison of atoms to eachother
+    eq = True: allows the comparison of atoms to each other
     unsafe_hash = True: allows the Atoms to be used as the keys of dictionaries
 
     If any parameter of the atom is changed, it will no longer work as the key of the dictionary.
@@ -231,6 +231,7 @@ def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
     Parameters
     ----------
     mo: The molecule to be shifted
+
     atom_number: The index of the atom in mo.atoms to be designated as the new center atom.
 
     Returns
@@ -261,12 +262,15 @@ def rotate_point_around_vector(point: tuple[float, float, float],
                                deg: float) -> tuple[float, float, float]:
     """
     Rotate a point around a selected vector by some number of degrees.
-    Uses a quaternionic rotation to avoid gimbal lock, and for ease of coding.
+    Uses a quaternion-ic rotation to avoid gimbal lock, and for ease of coding.
 
     Parameters
     ----------
-    point: The point to be rotated.
-    vector: The vector to be used as a rotation axis. Center must be on the origin.
+    point: The (x, y, z) point to be rotated.
+
+    vector: The (x, y, z) vector to be used as a rotation axis. Center must be on the origin.
+            Does not need to be unit size.
+
     deg: The angle to which the point will be rotated. Has units of degrees.
 
     Returns
@@ -291,13 +295,15 @@ def bonded_atom_search(molecule: Molecule, start: Atom, wall: list) -> list:
     Parameters
     ----------
     molecule: A Molecule object
+
     start: An atom in the molecule that we want to find all the bonded atoms of
+
     wall:  A list of atoms which are not to be included in the search.
 
     Returns
     -------
     important: The list of atoms which have a path back to the start atom,
-    excluding any paths through the wall atoms.
+               excluding any paths through the wall atoms.
     """
     bonded = lambda x: molecule.bonds[x]
     important = [start]
