@@ -268,6 +268,7 @@ def main():
     # Sublists have the format:
     # [center_atom, ancr_atom, [rotatees], angle increments]
     rotation_queue = []
+    rotation_count = 1
 
     # Get all the log files in the current directory and all subdirectories.
     files = glob("*.log")
@@ -330,11 +331,15 @@ def main():
             }
         )
 
+        # Increase total rotation count
+        rotation_count *= len(degrees) + 1
+
         print(
             f"\nThe rotation of {len(rotate_nums)} atoms,\n"
-            f"\t about the {center_atom_num},{ancr_atom_num} atom bond axis,\n"
-            f"\t with a total of {len(degrees) + 1}, {angle} degree rotations,\n"
-            f"\t has been added to the queue of rotations.\n"
+            f"\tabout the {center_atom_num},{ancr_atom_num} atom bond axis,\n"
+            f"\twith a total of {len(degrees) + 1}, {angle} degree rotations,\n"
+            f"\thas been added to the queue of rotations.\n"
+            f"\tThere are now {rotation_count} rotations total.\n"
         )
 
         if not yes_no("Add more rotations"):
