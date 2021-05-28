@@ -63,7 +63,8 @@ def make_choice_list(choices: list[str],
     return chosen
 
 
-def make_choice_dict(choices: dict, prompt: str = "Select one of the following (ex. 2):"):
+def make_choice_dict(choices: dict,
+                     prompt: str = "Select one of the following (ex. 2):"):
     """
     Prints a prompt and a list of choices for the user to select from.
 
@@ -202,7 +203,7 @@ def write_job_to_com(
 %Chk={title}.chk
 #n {theory}/{basis_set} {job}
 
-{title}
+ {title}
 
 {charge} {multiplicity}
 """
