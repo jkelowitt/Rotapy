@@ -24,20 +24,34 @@ import pyquaternion as pq
 from tqdm import tqdm
 
 from data_dicts import cov_rads, bond_threshold
-from parsing import (
-    make_output_folder,
-    make_choice_list,
-    yes_no,
-    parse_opt_geom_from_log,
-    make_choice_dict,
-    write_job_to_com,
-)
+from parsing import (make_output_folder,
+                     make_choice_list,
+                     yes_no,
+                     parse_opt_geom_from_log,
+                     make_choice_dict,
+                     write_job_to_com)
 
 
 @dataclass(eq=True, unsafe_hash=True)
 class Atom:
     """
     Data class containing all the pertinent information about an atom.
+    eq = True: allows the comparison of atoms to eachother
+    unsafe_hash = True: allows the Atoms to be used as the keys of dictionaries
+
+    If any parameter of the atom is changed, it will no longer work as the key of the dictionary.
+        hence, 'unsafe' hash.
+
+    Parameters
+    ----------
+    name: Atomic symbol of the atom
+
+    pos: (x, y, z) position of the atom in global space
+
+    color: Color of the atom. Defined in __post_init__ using a color dictionary
+
+    cov_radius: Covalent Radius of the atom. Defines the distance at which the atom can bond.
+
     """
 
     name: str
@@ -59,6 +73,30 @@ class Atom:
 class Molecule:
     """
     A molecule class used to hold atoms and the bonds between those atoms.
+
+    Parameters
+    ----------
+    name: The name of the molecule.
+
+    atoms: A list of atoms containing Atom objects which form the molecule
+
+    bonds: A dictionary with Atoms as keys, and other Atoms as values.
+           The key represents the current atom.
+           The value represents every other atom which it is currently bonded to.
+
+    Methods
+    -------
+    add_atom: Adds an atom to the molecule
+
+    remove_atom: Removes an atom from the molecule
+
+    replace_atom: Replaces an atom in the molecule, so that the new atom retains the index in
+                  Molecule.atoms that the removed atom previously had.
+
+    make_bond_graph: Generates self.bonds. Used after all atom adjustments.
+
+    plot_structure: Plots the 3d structure of the molecule, and allows for the structure
+                    to be saved to a file.
     """
 
     def __init__(self, name: str, atoms: list):
@@ -75,9 +113,18 @@ class Molecule:
         self.atoms.append(other)
         self.make_bond_graph()
 
-    def remove_atom(self, a):
+    def remove_atom(self, a) -> None:
         """Remove an atom from the molecule"""
         self.atoms.remove(a)
+        self.make_bond_graph()
+
+    def replace_atom(self, old_num, new_atom) -> None:
+        """
+        Removes one atom and adds another in its place.
+        This ensures that the numbering for the atoms in the molecule remain constant.
+        Atom 2 will remain atom 2 even if atom 1 is replaced.
+        """
+        self.atoms[old_num] = new_atom
         self.make_bond_graph()
 
     def make_bond_graph(self) -> None:
@@ -98,7 +145,7 @@ class Molecule:
 
             self.bonds[a] = list(new_bonds).copy()
 
-    def plot_structure(self, title=None, save=False, show=True, output="") -> None:
+    def plot_structure(self, title: str = None, save: bool = False, show: bool = True, output: str = "") -> None:
         """
         Plots the structure of the Molecule in 3d.
         The atoms are colored according to the color_dict in __post_init__.
@@ -175,22 +222,20 @@ class Molecule:
 
         plt.close()
 
-    def replace_atom(self, old_num, new_atom):
-        """
-        Removes one atom and adds another in its place.
-        This ensures that the numbering for the atoms in the molecule remain constant.
-        Atom 2 will remain atom 2 even if atom 1 is replaced.
-        """
-        self.atoms[old_num] = new_atom
-        self.make_bond_graph()
-
 
 def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
     """
     Translates the coordinates of all atoms in the mo so that
         the selected atom is at the origin.
 
-    :return: A shifted copy of the molecule.
+    Parameters
+    ----------
+    mo: The molecule to be shifted
+    atom_number: The index of the atom in mo.atoms to be designated as the new center atom.
+
+    Returns
+    -------
+    mo: A copy of the molecule shifted so that the atom indicated by atom_number is at (0,0,0).
     """
     selected_atom = mo.atoms[atom_number]
     dx = selected_atom.pos[0]
@@ -217,10 +262,16 @@ def rotate_point_around_vector(point: tuple[float, float, float],
     """
     Rotate a point around a selected vector by some number of degrees.
     Uses a quaternionic rotation to avoid gimbal lock, and for ease of coding.
-    :param point: The point to be rotated.
-    :param vector: The vector to be used as a rotation axis. Center must be on the origin.
-    :param deg: The angle to which the point will be rotated. Has units of degrees.
-    :return: A tuple containing the (x, y, z) cartesian coordinates of the rotated point
+
+    Parameters
+    ----------
+    point: The point to be rotated.
+    vector: The vector to be used as a rotation axis. Center must be on the origin.
+    deg: The angle to which the point will be rotated. Has units of degrees.
+
+    Returns
+    -------
+    new_vec: A tuple containing the (x, y, z) cartesian coordinates of the rotated point
     """
 
     # This quaternion object will perform the rotation encoded into its initialization.
@@ -232,10 +283,21 @@ def rotate_point_around_vector(point: tuple[float, float, float],
     return new_vec
 
 
-def bonded_atom_search(molecule, start, wall):
+def bonded_atom_search(molecule: Molecule, start: Atom, wall: list) -> list:
     """
     Takes in a network and returns all nodes with a path to the starting atom,
     excluding any blocked nodes.
+
+    Parameters
+    ----------
+    molecule: A Molecule object
+    start: An atom in the molecule that we want to find all the bonded atoms of
+    wall:  A list of atoms which are not to be included in the search.
+
+    Returns
+    -------
+    important: The list of atoms which have a path back to the start atom,
+    excluding any paths through the wall atoms.
     """
     bonded = lambda x: molecule.bonds[x]
     important = [start]
@@ -243,7 +305,7 @@ def bonded_atom_search(molecule, start, wall):
     for atom in important:
         bonds = bonded(atom)
         for bond in bonds:
-            if bond != wall and (bond not in important):
+            if bond not in wall and (bond not in important):
                 important.append(bond)
 
     return important

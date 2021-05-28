@@ -2,7 +2,18 @@ from os import path, makedirs, getcwd
 
 
 def yes_no(prompt: str) -> bool:
-    """Returns True if Yes, False if No."""
+    """
+    Returns True if Yes, False if No.
+
+    Parameters
+    ----------
+    prompt: The string which is used to get the yes or no response.
+            "(y/n): " will be tacked on to this string.
+
+    Returns
+    -------
+    The boolean of whether or not the user indicated positively.
+    """
     yes = ["y", "Y", "Yes", "1"]
     no = ["N", "n", "No", "0"]
 
@@ -11,12 +22,7 @@ def yes_no(prompt: str) -> bool:
         if done in yes + no:
             break
 
-    # If no
-    if done in no:
-        return False
-
-    # If yes
-    return True
+    return done in yes
 
 
 def make_choice_list(choices: list[str],
@@ -106,7 +112,18 @@ def make_choice_dict(choices: dict,
 
 
 def make_output_folder(sub: str = "") -> str:
-    """Makes a directory in the script location to output the downloaded files"""
+    """
+    Makes a directory in the script location to output the downloaded files
+
+    Parameters
+    ----------
+    sub: The name of the directory to be made.
+
+    Returns
+    -------
+    dir_path: The directory pointing to :sub:
+
+    """
     # Finds the current directory
     dir_path = getcwd()
 
@@ -123,11 +140,15 @@ def parse_opt_geom_from_log(file: str) -> list:
     """
     Given a .log file which contains an optimized geometry, extract the (x,y,z) cartesian coordinates.
 
-    Returns the atoms in the format:
+    Parameters
+    ----------
+    file: The name of the file to be parsed.
+
+    Returns
+    -------
     [["Atom 1 name", X_coord, Y_coord, Z_coord],
     ["Atom 2 name", X_coord, Y_coord, Z_coord]
-    ...
-    ]
+    ...]
     """
 
     # Read the data from the file
@@ -169,31 +190,35 @@ def parse_opt_geom_from_log(file: str) -> list:
 
 
 def write_job_to_com(
-    atoms: list,
-    title: str = "molecule_name",
-    charge: int = 0,
-    multiplicity: float = 1,
-    job: str = "Opt Freq",
-    theory: str = "B3LPY",
-    basis_set: str = "6-311G(2df,2p)",
-    cores: int = 8,
-    memory: str = "20gb",
-    linda: int = 1,
-    output: str = "",
-    ) -> None:
+        atoms: list,
+        title: str = "molecule_name",
+        charge: int = 0,
+        multiplicity: float = 1,
+        job: str = "Opt Freq",
+        theory: str = "B3LPY",
+        basis_set: str = "6-311G(2df,2p)",
+        cores: int = 8,
+        memory: str = "20gb",
+        linda: int = 1,
+        output: str = "",
+) -> None:
     """
     Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
     and saves the coordinates to a .com file.
 
-    The user may specify:
-        The jobs to be performed
-        The level of theory to use
-        The basis set to run
-        The number of cores to use
-        The amount of memory to use
-        Whether or not to use a checkpoint
-        How many linda cores to use (set to 1 even if not being used)
-        The output directory for the file
+    Parameters
+    ----------
+    atoms: The atoms to be written
+    title: The title for the file
+    charge: The overall charge on the molecule
+    multiplicity: The multiplicity of the atom
+    job: The jobs to be performed in the file (Opt Freq)
+    theory: The level of theory to use
+    basis_set: The basis set to run
+    cores: The number of cores to use
+    memory: The amount of memory to use
+    linda: How many linda cores to use (set to 1 even if not being used)
+    output: The output directory for the file
     """
 
     d = f"""\
