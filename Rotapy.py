@@ -460,13 +460,13 @@ def main():
                 if option in ("exit", "Exit"):
                     break
 
-                value = input("What would you like to change it to (ex. opt): ")
+                value = input("\nWhat would you like to change it to (ex. opt): ")
                 settings[option] = value
                 print(f"Changed {option} to {value}\n")
 
     if save_images:
         image_output = input(
-            "What would you like to name the output directory for the image files: "
+            "\nWhat would you like to name the output directory for the image files: "
         )
 
     # Pause for preparation and alert the user to the download file count.
@@ -480,6 +480,7 @@ def main():
             counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
             for count in range(counter):  # Step through the molecule list
                 for turn in rotation["angles"]:  # Step through the angles to be performed
+                    pbar.update(1)
 
                     # Rotated atoms
                     rotated = []
@@ -510,7 +511,6 @@ def main():
 
                     new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
                     rotamers.append(new_rotamer)
-                    pbar.update(1)
 
     # Perform file saving
     if save_com_files:
