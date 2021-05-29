@@ -160,7 +160,7 @@ class Molecule:
         if save:
             matplotlib.use('agg')
         else:
-            matplotlib.use('Qt5Agg')
+            matplotlib.use('tkAgg')
 
         # Regenerate the bonds in case any new atoms have been added.
         self.make_bond_graph()
