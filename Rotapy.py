@@ -20,8 +20,8 @@ from glob import glob
 
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
 import pyquaternion as pq
+from numpy import arange, sqrt
 from tqdm import tqdm
 
 from data_dicts import cov_rads, bond_threshold
@@ -257,7 +257,7 @@ def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
 
 def distance(pt1: tuple[float, float, float], pt2: tuple[float, float, float]) -> float:
     """Returns the distance between two points (x, y, z) in 3D"""
-    return np.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
+    return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
 
 
 def rotate_point_around_vector(point: tuple[float, float, float],
@@ -391,7 +391,7 @@ def main():
         angle = float(
             input(f"What step size should the scan perform, in degrees (ex. 45deg -> 8 rotamers): ")
         )
-        degrees = np.arange(angle, 360, angle)
+        degrees = arange(angle, 360, angle)
 
         rotation_queue.append(
             {
