@@ -1,6 +1,8 @@
 """
 @Author: Jackson K Elowitt
 @Start Date: May 14, 2021
+@Contact: jkelowitt@protonmail.com
+@Site: github.com/jkelowitt/Rotapy
 
 The end goal of this script is to be able to take in a Gaussian09 .log file,
 and allow the user to rotate specific elements of the contained molecule, and
@@ -34,6 +36,7 @@ from parsing import (make_choice_list,
                      make_choice_dict,
                      write_job_to_com)
 
+# Prevents errors with the executable
 multiprocessing.freeze_support()
 
 
@@ -79,7 +82,7 @@ def main():
     print("    ^       ^       ^    ")
     print("    Anchor  Center  Will be rotated\n")
 
-    # Ask before shwoing plot
+    # Ask before showing plot
     if yes_no("View numbered structure:"):
         plot_structure(base_compound)
 
@@ -242,6 +245,7 @@ def main():
         # Using pools results in ~4x speed performance boost when saving images.
         # 360 rotations in 00:02:45 -> 00:00:42
         with Pool() as pool:
+            # Using imap, despite being slower, so that we can have a progress bar.
             list(pool.imap(saving, tqdm(rotamers, desc="Saving images")))
 
 
