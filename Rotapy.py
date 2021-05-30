@@ -29,7 +29,8 @@ from classes import Molecule, Atom
 from functions import (plot_structure,
                        bonded_atom_search,
                        center_on_atom,
-                       rotate_point_around_vector)
+                       rotate_point_around_vector,
+                       verified_input)
 from parsing import (make_choice_list,
                      yes_no,
                      parse_opt_geom_from_log,
@@ -87,8 +88,8 @@ def main():
         plot_structure(base_compound)
 
     while True:
-        ancr_atom_num = int(input("Which atom is the anchor atom (ex. 7): "))
-        center_atom_num = int(input("Which atom is the center atom (ex. 27): "))
+        ancr_atom_num = verified_input("Which atom is the anchor atom (ex. 7): ", int)
+        center_atom_num = verified_input("Which atom is the center atom (ex. 27): ", int)
 
         base_compound = center_on_atom(base_compound, center_atom_num)
         ancr_atom = base_compound.atoms[ancr_atom_num]
@@ -108,9 +109,7 @@ def main():
         print(
             f"\nThe {len(rotate_nums)} atom(s) attached to the center atom will be scanned through their rotation."
         )
-        angle = float(
-            input(f"What step size should the scan perform, in degrees (ex. 45deg -> 8 rotamers): ")
-        )
+        angle = verified_input("What step size should the scan perform, in degrees (ex. 45deg -> 8 rotamers): ", float)
         degrees = arange(angle, 360, angle)
 
         rotation_queue.append(
@@ -185,17 +184,12 @@ def main():
                 print(f"Changed {option} to {value}\n")
 
     if save_images:
-        image_output = input(
-            "\nWhat would you like to name the output directory for the image files: "
-        )
+        image_output = input("\nWhat would you like to name the output directory for the image files: ")
 
     # Pause for preparation and alert the user to the download file count.
-    input(
-        f"\nPress enter to perform the {rotation_count} rotations and save the files."
-    )
+    input(f"\nPress enter to perform the {rotation_count} rotations and save the files.")
 
     # Perform rotation calculations
-    # TODO take this out and make it threaded. >50/sec is the goal
     with tqdm(total=rotation_count, desc="Performing rotation calculations") as pbar:
         for rotation in rotation_queue:  # Step through the rotation queue
             counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
