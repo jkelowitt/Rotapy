@@ -178,3 +178,32 @@ def bonded_atom_search(molecule: Molecule, start: Atom, wall: list) -> list:
                 important.append(bond)
 
     return important
+
+
+def verified_input(prompt: str = "", verify: type = int):
+    """
+    Verify that the user has input a value which can be converted to a specified type.
+    This function will not return until the user has input something which can be converted
+        to the type specified by 'verify'
+
+    Parameters
+    ----------
+    prompt: The prompt for input for the user.
+    verify: The type for the input to be returned as
+
+    Returns
+    -------
+    data: Input from the user with the type, verify.
+
+
+    """
+    while True:
+        data = input(prompt)
+
+        try:
+            data = verify(data)
+            break
+        except ValueError:
+            print(f"Error: Must be of type {verify.__name__}")
+
+    return data
