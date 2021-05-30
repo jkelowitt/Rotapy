@@ -1,0 +1,92 @@
+#!/bin/env python3
+
+import os
+from glob import glob
+from sys import argv
+
+shfile = """#!/bin/bash
+
+#SBATCH --nodes=1 
+#SBATCH --ntasks={0}
+#SBATCH --mem={1}GB
+#SBATCH -t {2}:{3}:00
+{4}
+
+export TEMPORARY_DIR=/tmp/$SLURM_JOB_ID
+export MACHINEFILE=`/fslapps/fslutils/generate_pbs_nodefile`
+export SCRATCH_DIR="$TEMPORARY_DIR/temporary_files"
+export JOB_NAME={5}
+export JOB_SOURCE_DIR="$SLURM_SUBMIT_DIR"
+
+echo "---------------------------------------------------------"
+echo "Gaussian09 Job Output Information:"
+echo "---------------------------------------------------------"
+echo "Current node:"
+cat "$MACHINEFILE"
+echo "---------------------------------------------------------"
+echo "JOB START TIME: $(date)"
+
+module load g09
+
+/fslapps/gaussian09/B.01/EM64T/g09/g09 < "{5}.com" > "{5}.log"
+
+echo "---------------------------------------------------------"
+echo "JOB END TIME: $(date)"
+echo "---------------------------------------------------------"
+exit EXIT_CODE=$?
+#echo $EXIT_CODE
+"""
+
+# Gathering Inputs
+INPUT = [i for i in argv[1:]]
+
+
+def ReadInput(items):
+    """Converts argv into the appropriate variables for use."""
+    test = (items[-1] == "-t")
+    cpus = str(items[0])
+    mem = str(items[1])
+    hours = str(items[2]).zfill(2)
+    minutes = str(items[3]).zfill(2)
+    return cpus, mem, hours, minutes, test
+
+
+cpus, mem, hours, minutes, test = ReadInput(INPUT)
+
+if test:
+    test = "#SBATCH --qos=test"
+else:
+    test = ""
+
+# Finding the input file in the directory
+files = glob("*.com")
+
+# Prompt for submission
+ready = (f"""
+Are you ready to submit these jobs?: 
+----------------------------
+CPUS: {cpus}
+Memory: {mem}
+Time: {hours}:{minutes}:00
+File Count: {len(files)}
+----------------------------""")
+
+print(ready)
+status = input("Response (y/n):")
+# Actual Submission
+if status == "n":
+    print("The Job Was Not Submitted")
+
+else:
+    for file in files:
+        filename = file[:-4]  # Without ".com"
+
+        # Make the formatted shell script
+        submit = shfile.format(cpus, mem, hours, minutes, test, filename)
+
+        # Writing to .sh template
+        with open(f'{filename}.sh', 'w') as SH:
+            SH.write(submit)
+
+        # Submitting to bash
+        os.system(f"sbatch {filename}.sh")
