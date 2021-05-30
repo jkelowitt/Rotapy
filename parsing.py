@@ -136,7 +136,11 @@ def make_output_folder(sub: str = "") -> str:
 
     # If the folder doesn't exist, make it.
     if not path.exists(dir_path):
-        makedirs(dir_path)
+        try:
+            makedirs(dir_path)
+        except FileExistsError:
+            # Sometimes this error pops when using threading or multiprocessing.
+            pass
     return dir_path
 
 
