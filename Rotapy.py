@@ -16,20 +16,19 @@ Main Changes remaining:
 
 import multiprocessing
 import sys
-from dataclasses import dataclass, field
 from functools import partial
 from glob import glob
 from multiprocessing import Pool
 
-import matplotlib
-import matplotlib.pyplot as plt
-import pyquaternion as pq
-from numpy import arange, sqrt
+from numpy import arange
 from tqdm import tqdm
 
-from data_dicts import cov_rads, bond_threshold
-from parsing import (make_output_folder,
-                     make_choice_list,
+from classes import Molecule, Atom
+from functions import (plot_structure,
+                       bonded_atom_search,
+                       center_on_atom,
+                       rotate_point_around_vector)
+from parsing import (make_choice_list,
                      yes_no,
                      parse_opt_geom_from_log,
                      make_choice_dict,
