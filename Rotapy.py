@@ -16,7 +16,9 @@ Main Changes remaining:
 
 import sys
 from dataclasses import dataclass, field
+from functools import partial
 from glob import glob
+from multiprocessing import Pool
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -96,8 +98,6 @@ class Molecule:
 
     make_bond_graph: Generates self.bonds. Used after all atom adjustments.
 
-    plot_structure: Plots the 3d structure of the molecule, and allows for the structure
-                    to be saved to a file.
     """
 
     def __init__(self, name: str, atoms: list):
@@ -146,84 +146,90 @@ class Molecule:
 
             self.bonds[a] = list(new_bonds).copy()
 
-    def plot_structure(self, title: str = None, save: bool = False, show: bool = True, output: str = "") -> None:
-        """
-        Plots the structure of the Molecule in 3d.
-        The atoms are colored according to the color_dict in __post_init__.
-        The atoms are sized proportional to the atom's cov_radius.
-        The atoms are numbered by the order in which they are added to the molecule.
-        Bonds are placed according to self.bond_graph.
-        Double and triple bonds are not shown.
-        """
 
-        # Prevent memory leak when saving many figures.
-        if save:
-            matplotlib.use('agg')
-        else:
-            matplotlib.use('tkAgg')
+def plot_structure(mo, title: str = None, save: bool = False, show: bool = True, output: str = "") -> None:
+    """
+    Plots the structure of the Molecule in 3d.
+    The atoms are colored according to the color_dict in __post_init__.
+    The atoms are sized proportional to the atom's cov_radius.
+    The atoms are numbered by the order in which they are added to the molecule.
+    Bonds are placed according to mo.bond_graph.
+    Double and triple bonds are not shown.
+    """
 
-        # Regenerate the bonds in case any new atoms have been added.
-        self.make_bond_graph()
+    # Prevent memory leak when saving many figures.
+    if save:
+        matplotlib.use('agg')
+    else:
+        matplotlib.use('tkAgg')
 
-        # Make an empty 3d figure
-        fig = plt.figure()
-        ax = fig.add_subplot(projection="3d")
+    # Make an empty 3d figure
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
 
-        size = 300
+    # Hide axis planes and axis lines
+    ax.set_axis_off()
 
-        # Draw atoms as circles
-        for num, a in enumerate(self.atoms):
-            x = a.pos[0]
-            y = a.pos[1]
-            z = a.pos[2]
+    dpi = 200
+    fig.set_dpi(dpi)
+    fig.set_size_inches(3, 3)
 
-            # Size scales with cov_radius
-            ax.scatter(x, y, z, color=a.color, edgecolor="k", s=size * a.cov_radius)
+    # Size = 300 @ 140 dpi
+    size = dpi / 2
 
-            # Number the as.
-            text_color = tuple(
-                1 - a for a in a.color
-            )  # The text color is the negative of the color of the a
-            ax.text(x, y, z, num,
-                    zorder=100,
-                    color=text_color,
-                    ha="center",  # Horizontal Alignment
-                    va="center",  # Vertical Alignment
-                    fontsize=size * a.cov_radius / 20,
-                    )
+    # Draw atoms as circles
+    for num, a in enumerate(mo.atoms):
+        x = a.pos[0]
+        y = a.pos[1]
+        z = a.pos[2]
 
-        # Draw bonds as lines
-        # This will draw duplicate lines on top of each other.
-        # For example, if two atoms are bonded to each other,
-        # there will be one bond from A to B, and another from B to A.
-        # This may be a problem with very large molecules.
-        for a in self.bonds:
-            x1 = a.pos[0]
-            y1 = a.pos[1]
-            z1 = a.pos[2]
-            for bonded_a in self.bonds[a]:
-                x2 = bonded_a.pos[0]
-                y2 = bonded_a.pos[1]
-                z2 = bonded_a.pos[2]
-                ax.plot((x1, x2), (y1, y2), (z1, z2), color=(0.5, 0.5, 0.5))
+        # Size scales with cov_radius
+        ax.scatter(x, y, z, color=a.color, edgecolor="k", s=size * a.cov_radius)
 
-        # One liner used to force the axes to be equal in step width.
-        # For example, (0,1) may appear 20px in length, while (1,0) may appear 10px in length.
-        # With this line, they will both be length 20.
-        # I don't know how this works. I found it here:
-        # https://github.com/matplotlib/matplotlib/issues/17172#issuecomment-830139107
-        ax.set_box_aspect([ub - lb for lb, ub in (getattr(ax, f"get_{a}lim")() for a in "xyz")])
+        # Number the as.
+        text_color = tuple(
+            1 - a for a in a.color
+        )  # The text color is the negative of the color of the a
+        ax.text(x, y, z, num,
+                zorder=100,
+                color=text_color,
+                ha="center",  # Horizontal Alignment
+                va="center",  # Vertical Alignment
+                fontsize=size * a.cov_radius / 10,
+                )
 
-        if save:
-            directory = f"{make_output_folder(output)}/{title if title else self.name}.png"
-            plt.savefig(directory)
+    # Draw bonds as lines
+    # This will draw duplicate lines on top of each other.
+    # For example, if two atoms are bonded to each other,
+    # there will be one bond from A to B, and another from B to A.
+    # This may be a problem with very large molecules.
+    for a in mo.bonds:
+        x1 = a.pos[0]
+        y1 = a.pos[1]
+        z1 = a.pos[2]
+        for bonded_a in mo.bonds[a]:
+            x2 = bonded_a.pos[0]
+            y2 = bonded_a.pos[1]
+            z2 = bonded_a.pos[2]
+            ax.plot((x1, x2), (y1, y2), (z1, z2), color=(0.5, 0.5, 0.5))
 
-        if show:
-            plt.title(title if title else self.name)
-            plt.show()
+    # One liner used to force the axes to be equal in step width.
+    # For example, (0,1) may appear 20px in length, while (1,0) may appear 10px in length.
+    # With this line, they will both be length 20.
+    # I don't know how this works. I found it here:
+    # https://github.com/matplotlib/matplotlib/issues/17172#issuecomment-830139107
+    ax.set_box_aspect([ub - lb for lb, ub in (getattr(ax, f"get_{a}lim")() for a in "xyz")])
 
-        # Try to remove the figures from memory.
-        plt.close('all')
+    if save:
+        directory = f"{make_output_folder(output)}/{title if title else mo.name}.png"
+        plt.savefig(directory)
+
+    if show:
+        plt.title(title if title else mo.name)
+        plt.show()
+
+    # Try to remove the figures from memory.
+    plt.close('all')
 
 
 def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
@@ -364,7 +370,7 @@ def main():
 
     # Ask before shwoing plot
     if yes_no("View numbered structure:"):
-        base_compound.plot_structure()
+        plot_structure(base_compound)
 
     while True:
         ancr_atom_num = int(input("Which atom is the anchor atom (ex. 7): "))
@@ -475,6 +481,7 @@ def main():
     )
 
     # Perform rotation calculations
+    # TODO take this out and make it threaded. >50/sec is the goal
     with tqdm(total=rotation_count, desc="Performing rotation calculations") as pbar:
         for rotation in rotation_queue:  # Step through the rotation queue
             counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
@@ -514,13 +521,19 @@ def main():
 
     # Perform file saving
     if save_com_files:
-        for molecule in tqdm(rotamers, desc="Saving rotamer com files"):
+        for molecule in tqdm(rotamers, desc="Saving com files"):
             write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
 
     if save_images:
-        for molecule in tqdm(rotamers, desc="Saving rotamer images"):
-            molecule.plot_structure(save=True, show=False, output=image_output)
+        kw = {'save': True, 'show': False, 'output': image_output}
+        saving = partial(plot_structure, **kw)
+
+        # Using pools results in ~4x speed performance boost when saving images.
+        # 360 rotations in 00:02:45 -> 00:00:42
+        with Pool() as pool:
+            list(pool.imap(saving, tqdm(rotamers, desc="Saving images")))
 
 
 if __name__ == "__main__":
     main()
+    input("Calculating and saving complete. Press enter to close. ")
