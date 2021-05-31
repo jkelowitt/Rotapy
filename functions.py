@@ -1,3 +1,23 @@
+"""
+Functions used to facilitate Rotapy.
+
+plot_structure: Plots the structure of a given Molecule in 3d.
+
+center_on_atom: Translates the coordinates of all atoms in the mo so that
+                the selected atom is at the origin.
+
+rotate_point_around_vector: Rotate a point around a selected vector by some number of degrees.
+                            Uses a quaternion-ic rotation to avoid gimbal lock, and for ease of coding.
+
+bonded_atom_search: Takes in a network and returns all nodes with a path to the starting atom,
+                    excluding any blocked nodes.
+
+verified_input: Verify that the user has input a value which can be converted to a specified type.
+                This function will not return until the user has input something which can be converted
+                to the type specified by 'verify'
+
+"""
+
 import matplotlib
 import matplotlib.pyplot as plt
 import pyquaternion as pq

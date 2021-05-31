@@ -172,9 +172,7 @@ def main():
         if not non_default:
             settings["Exit"] = ""
             while True:
-                option = make_choice_dict(
-                    settings, prompt="\nWhich would you like to change (ex. job): "
-                )
+                option = make_choice_dict(settings, prompt="\nWhich would you like to change (ex. job): ")
 
                 if option in ("exit", "Exit"):
                     break
@@ -190,21 +188,27 @@ def main():
     input(f"\nPress enter to perform the {rotation_count} rotations and save the files.")
 
     # Perform rotation calculations
-    with tqdm(total=rotation_count, desc="Performing rotation calculations") as pbar:
-        for rotation in rotation_queue:  # Step through the rotation queue
-            counter = len(rotamers)  # Counter holds the number of molecules to have rotamers made from.
-            for count in range(counter):  # Step through the molecule list
-                for turn in rotation["angles"]:  # Step through the angles to be performed
-                    pbar.update(1)
 
+    # With a progress bar
+    with tqdm(total=rotation_count, desc="Performing rotation calculations") as pbar:
+
+        # Step through the rotation queue
+        for rotation in rotation_queue:
+
+            # Counter holds the number of molecules to have rotamers made from.
+            # This is done to prevent performing rotations twice on the same rotamer.
+            counter = len(rotamers)
+
+            # Step through the molecule list
+            for count in range(counter):
+
+                # Step through the angles to be performed
+                for turn in rotation["angles"]:
                     # Rotated atoms
                     rotated = []
 
                     # Center the molecule on the center atom
                     new_rotamer = center_on_atom(rotamers[count], rotation["center"])
-
-                    # Print the title of the file being rotated
-                    # print(f"{new_rotamer.name}__a{rotation['ancr']}-c{rotation['center']}-{turn}deg")
 
                     # Get the ancr atom to represent the axis of rotation
                     ancr_atom = new_rotamer.atoms[rotation["ancr"]]
@@ -225,7 +229,13 @@ def main():
                         new_rotamer.replace_atom(old, new)
 
                     new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
+
+                    # Print the title of the molecule being rotated
+                    # print(new_rotamer.name")
+
                     rotamers.append(new_rotamer)
+
+                    pbar.update(1)
 
     # Perform file saving
     if save_com_files:

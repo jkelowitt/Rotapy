@@ -1,3 +1,24 @@
+"""
+Functions used in Rotapy involving the parsing of user-based data.
+
+yes_no: Returns True if Yes, False if No
+
+make_choice_list: Prints a prompt and a list of choices for the user to select
+                  from, and returns the user's selection. From a list.
+
+make_choice_dict: Prints a prompt and a list of choices for the user to select
+                  from, and returns the user's selection. From a dictionary.
+
+make_output_folder: Makes a directory in the script location to output the downloaded files
+
+parse_opt_geom_from_log: Given a .log file which contains an optimized geometry,
+                         extract the (x,y,z) cartesian coordinates.
+
+write_job_to_com: Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
+                  and saves the coordinates to a .com file.
+"""
+
+
 from os import path, makedirs, getcwd
 
 

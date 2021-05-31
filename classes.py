@@ -1,7 +1,14 @@
+"""
+Classes used to facilitate Rotapy.
+
+Atom: Data class containing all the pertinent information about an atom.
+Molecule: A molecule class used to hold atoms and the bonds between those atoms.
+"""
+
 from dataclasses import dataclass, field
 
-from numpy.linalg import norm
 from numpy import array
+from numpy.linalg import norm
 
 from data_dicts import cov_rads, bond_threshold
 
