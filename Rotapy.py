@@ -255,7 +255,7 @@ def main():
                         rotamers.append(new_rotamer)
                     else:
                         bond_diff = sum(new_bond_count) - sum(originator_bond_count)
-                        new_rotamer.name += f"_{bond_diff}ERR"
+                        new_rotamer.name += f"_{bond_diff / 2}ERR"  # Bonds are two way, thus divide by 2
                         rotamers.append(new_rotamer)
 
                         erroneous_rotations += 1
@@ -264,8 +264,8 @@ def main():
 
     # Alert the user to the presence of bad rotamers
     if erroneous_rotations:
-        print(f"During the rotation calculations, {erroneous_rotations} rotamers formed or broke bonds. "
-              f"They will be labelled with 'ERR'.")
+        print(f"During the rotation calculations, {erroneous_rotations} rotamer(s formed or broke bonds. "
+              f"These rotamers will be labelled with '##ERR', where ## indicates the number of changed bonds.")
 
     # Perform file saving
     if save_com_files:
