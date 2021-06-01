@@ -26,7 +26,8 @@ from numpy import arange
 from tqdm import tqdm
 
 from classes import Molecule, Atom
-from functions import (plot_structure,
+from functions import (show_structure,
+                       save_structure,
                        bonded_atom_search,
                        center_on_atom,
                        rotate_point_around_vector,
@@ -86,7 +87,7 @@ def main():
     while True:
         # Ask before showing plot
         if yes_no("View numbered structure: "):
-            plot_structure(base_compound)
+            show_structure(base_compound)
 
         ancr_atom_num = verified_input("Which atom is the anchor atom (ex. 7): ", int)
         center_atom_num = verified_input("Which atom is the center atom (ex. 27): ", int)
@@ -243,8 +244,9 @@ def main():
             write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
 
     if save_images:
-        kw = {'save': True, 'show': False, 'output': image_output}
-        saving = partial(plot_structure, **kw)
+        # args and kwargs can't be passed into the imap function, so we make a partial
+        # function with the kwargs passed in here.
+        saving = partial(save_structure, output=image_output)
 
         # Using pools results in ~4x speed performance boost when saving images.
         # 360 rotations in 00:02:45 -> 00:00:42

@@ -26,21 +26,20 @@ from classes import Atom, Molecule
 from parsing import make_output_folder
 
 
-def plot_structure(mo, title: str = None, save: bool = False, show: bool = True, output: str = "") -> None:
+def generate_figure(mo):
     """
-    Plots the structure of the Molecule in 3d.
-    The atoms are colored according to the color_dict in __post_init__.
-    The atoms are sized proportional to the atom's cov_radius.
-    The atoms are numbered by the order in which they are added to the molecule.
-    Bonds are placed according to mo.bond_graph.
-    Double and triple bonds are not shown.
-    """
+    Generate a figure of the molecule and bonds
 
-    # Prevent memory leak when saving many figures.
-    if save:
-        matplotlib.use('agg')
-    else:
-        matplotlib.use('tkAgg')
+    Parameters
+    ----------
+    mo: The molecule to be modeled
+
+    Return
+    ------
+    fig: The matplotlib figure of the molecule.
+
+    ax: The matplotlib axes of the molecule.
+    """
 
     # Make an empty 3d figure
     fig = plt.figure()
@@ -99,15 +98,29 @@ def plot_structure(mo, title: str = None, save: bool = False, show: bool = True,
     # https://github.com/matplotlib/matplotlib/issues/17172#issuecomment-830139107
     ax.set_box_aspect([ub - lb for lb, ub in (getattr(ax, f"get_{a}lim")() for a in "xyz")])
 
-    if save:
-        directory = f"{make_output_folder(output)}/{title if title else mo.name}.png"
-        plt.savefig(directory)
+    return fig, ax
 
-    if show:
-        plt.title(title if title else mo.name)
-        plt.show()
 
-    # Try to remove the figures from memory.
+def show_structure(mo, title: str = None):
+    """Show the structure of a molecule in an interactive plot"""
+    matplotlib.use('tkAgg')
+
+    fig, ax = generate_figure(mo)
+
+    plt.title(title if title else mo.name)
+    plt.show()
+    plt.close('all')
+
+
+def save_structure(mo, title: str = None, output: str = ""):
+    """Save the structure of a molecule to a png file"""
+    matplotlib.use('agg')
+
+    fig, ax = generate_figure(mo)
+    directory = f"{make_output_folder(output)}/{title if title else mo.name}.png"
+
+    plt.title(title if title else mo.name)
+    plt.savefig(directory)
     plt.close('all')
 
 
