@@ -12,6 +12,7 @@ multiple rotations may be performed simultaneously, such as in a nested for loop
 Main Changes remaining:
     - Theres a lot of faffing about switching between atom numbers and the atom itself.
         There's got to be a better way to handle this.
+        Try looking up mathematica graph based code to find a better way to code Molecule
     - Check that no bonds break or add during the rotation.
 
 """
@@ -240,12 +241,16 @@ def main():
                     # Bonds being added indicates that two atoms have gotten too close to each other.
                     # The compound is not a rotamer if new bonds are formed, so exclude these cases.
 
+                    # Makes a list of the bond counts for each atom
                     originator_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
                     new_bond_count = [len(new_rotamer.bonds[b]) for b in new_rotamer.bonds]
 
                     originator_bond_count.sort()
                     new_bond_count.sort()
 
+                    # If the bond count lists are not exactly equal, a collision occurred
+                    # Only a very complex scenario would really defeat this detection method.
+                    # A complex problem == complex solution, thus, I procrastinate.
                     if new_bond_count == originator_bond_count:
                         rotamers.append(new_rotamer)
                     else:
@@ -257,6 +262,7 @@ def main():
 
                     pbar.update(1)
 
+    # Alert the user to the presence of bad rotamers
     if erroneous_rotations:
         print(f"During the rotation calculations, {erroneous_rotations} rotamers formed or broke bonds. "
               f"They will be labelled with 'ERR'.")
