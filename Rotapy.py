@@ -190,6 +190,8 @@ def main():
 
     # Perform rotation calculations
 
+    erroneous_rotations = 0
+
     # With a progress bar
     with tqdm(total=rotation_count, desc="Performing rotation calculations", dynamic_ncols=True) as pbar:
 
@@ -208,8 +210,11 @@ def main():
                     # Rotated atoms
                     rotated = []
 
+                    # The molecule being rotated
+                    originator = rotamers[count]
+
                     # Center the molecule on the center atom
-                    new_rotamer = center_on_atom(rotamers[count], rotation["center"])
+                    new_rotamer = center_on_atom(originator, rotation["center"])
 
                     # Get the ancr atom to represent the axis of rotation
                     ancr_atom = new_rotamer.atoms[rotation["ancr"]]
@@ -231,12 +236,30 @@ def main():
 
                     new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
 
-                    # Print the title of the molecule being rotated
-                    # print(new_rotamer.name")
+                    # Due to how the rotation is performed, bonds will never break, only form.
+                    # Bonds being added indicates that two atoms have gotten too close to each other.
+                    # The compound is not a rotamer if new bonds are formed, so exclude these cases.
 
-                    rotamers.append(new_rotamer)
+                    originator_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
+                    new_bond_count = [len(new_rotamer.bonds[b]) for b in new_rotamer.bonds]
+
+                    originator_bond_count.sort()
+                    new_bond_count.sort()
+
+                    if new_bond_count == originator_bond_count:
+                        rotamers.append(new_rotamer)
+                    else:
+                        bond_diff = sum(new_bond_count) - sum(originator_bond_count)
+                        new_rotamer.name += f"_{bond_diff}ERR"
+                        rotamers.append(new_rotamer)
+
+                        erroneous_rotations += 1
 
                     pbar.update(1)
+
+    if erroneous_rotations:
+        print(f"During the rotation calculations, {erroneous_rotations} rotamers formed or broke bonds. "
+              f"They will be labelled with 'ERR'.")
 
     # Perform file saving
     if save_com_files:
