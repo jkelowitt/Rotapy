@@ -13,7 +13,6 @@ Main Changes remaining:
     - Theres a lot of faffing about switching between atom numbers and the atom itself.
         There's got to be a better way to handle this.
         Try looking up mathematica graph based code to find a better way to code Molecule
-    - Check that no bonds break or add during the rotation.
 
 """
 
@@ -191,8 +190,6 @@ def main():
 
     # Perform rotation calculations
 
-    erroneous_rotations = 0
-
     # With a progress bar
     with tqdm(total=rotation_count, desc="Performing rotation calculations", dynamic_ncols=True) as pbar:
 
@@ -236,35 +233,36 @@ def main():
                         new_rotamer.replace_atom(old, new)
 
                     new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
-
-                    # Due to how the rotation is performed, bonds will never break, only form.
-                    # Bonds being added indicates that two atoms have gotten too close to each other.
-                    # The compound is not a rotamer if new bonds are formed, so exclude these cases.
-
-                    # Makes a list of the bond counts for each atom
-                    originator_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
-                    new_bond_count = [len(new_rotamer.bonds[b]) for b in new_rotamer.bonds]
-
-                    originator_bond_count.sort()
-                    new_bond_count.sort()
-
-                    # If the bond count lists are not exactly equal, a collision occurred
-                    # Only a very complex scenario would really defeat this detection method.
-                    # A complex problem == complex solution, thus, I procrastinate.
-                    if new_bond_count == originator_bond_count:
-                        rotamers.append(new_rotamer)
-                    else:
-                        bond_diff = sum(new_bond_count) - sum(originator_bond_count)
-                        new_rotamer.name += f"_{bond_diff / 2}ERR"  # Bonds are two way, thus divide by 2
-                        rotamers.append(new_rotamer)
-
-                        erroneous_rotations += 1
-
+                    rotamers.append(new_rotamer)
                     pbar.update(1)
 
+    # Check for collisions
+    collisions = 0
+
+    for rotamer in rotamers:
+        # Due to how the rotation is performed, bonds will never break, only form.
+        # Bonds being added indicates that two atoms have gotten too close to each other.
+        # The compound is not a rotamer if new bonds are formed, so tag these cases.
+
+        # Makes a list of the bond counts for each atom
+        base_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
+        new_bond_count = [len(rotamer.bonds[b]) for b in rotamer.bonds]
+
+        base_bond_count.sort()
+        new_bond_count.sort()
+
+        # If the bond count lists are not exactly equal, a collision occurred
+        # Only a very complex scenario would really defeat this detection method.
+        # A complex problem == complex solution, thus, I procrastinate.
+        if new_bond_count != base_bond_count:
+            bond_diff = sum(new_bond_count) - sum(base_bond_count)
+            rotamer.name += f"_{int(bond_diff / 2)}ERR"  # Bonds are two way, thus divide by 2
+
+            collisions += 1
+
     # Alert the user to the presence of bad rotamers
-    if erroneous_rotations:
-        print(f"During the rotation calculations, {erroneous_rotations} rotamer(s formed or broke bonds. "
+    if collisions:
+        print(f"During the rotation calculations, {collisions} rotamer(s) had bonds change.\n"
               f"These rotamers will be labelled with '##ERR', where ## indicates the number of changed bonds.")
 
     # Perform file saving
