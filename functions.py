@@ -107,7 +107,7 @@ def show_structure(mo, title: str = None):
 
     fig, ax = generate_figure(mo)
 
-    plt.title(title if title else mo.name)
+    plt.title(title if title else mo.name, fontsize=5)
     plt.show()
     plt.close('all')
 
@@ -119,7 +119,7 @@ def save_structure(mo, title: str = None, output: str = ""):
     fig, ax = generate_figure(mo)
     directory = f"{make_output_folder(output)}/{title if title else mo.name}.png"
 
-    plt.title(title if title else mo.name)
+    plt.title(title if title else mo.name, fontsize=5)
     plt.savefig(directory)
     plt.close('all')
 
