@@ -42,15 +42,13 @@ def generate_figure(mo):
     """
 
     # Make an empty 3d figure
-    fig = plt.figure()
+    dpi = 300
+    pixels = 1000
+    fig = plt.figure(figsize=(pixels / dpi, pixels / dpi), dpi=dpi)
     ax = fig.add_subplot(projection="3d")
 
     # Hide axis planes and axis lines
     ax.set_axis_off()
-
-    dpi = 200
-    fig.set_dpi(dpi)
-    fig.set_size_inches(3, 3)
 
     # Size = 300 @ 140 dpi
     size = dpi / 2
