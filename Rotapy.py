@@ -152,9 +152,9 @@ def main():
         "mul": "1",
         "job": "Opt Freq",
         "theory": "B3LPY",
-        "basis set": "6-311G(2df,2p)",
+        "basis": "6-311G(2df,2p)",
         "cores": "8",
-        "mem": "20gb",
+        "memory": "20gb",
         "linda": "1",
     }
 
@@ -182,8 +182,7 @@ def main():
     input(f"\nPress enter to perform the {rotation_count} rotations and save the files.")
 
     # Perform rotation calculations
-
-    # With a progress bar
+    # ~10/sec
     with tqdm(total=rotation_count, desc="Performing rotation calculations", dynamic_ncols=True) as pbar:
 
         # Step through the rotation queue

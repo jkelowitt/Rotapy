@@ -224,10 +224,10 @@ def write_job_to_com(
         atoms: list,
         title: str = "molecule_name",
         charge: int = 0,
-        multiplicity: float = 1,
+        mul: float = 1,
         job: str = "Opt Freq",
         theory: str = "B3LPY",
-        basis_set: str = "6-311G(2df,2p)",
+        basis: str = "6-311G(2df,2p)",
         cores: int = 8,
         memory: str = "20gb",
         linda: int = 1,
@@ -245,13 +245,13 @@ def write_job_to_com(
 
     charge: The overall charge on the molecule
 
-    multiplicity: The multiplicity of the atom
+    mul: The multiplicity of the atom
 
     job: The jobs to be performed in the file (Opt Freq)
 
     theory: The level of theory to use
 
-    basis_set: The basis set to run
+    basis: The basis set to run
 
     cores: The number of cores to use
 
@@ -269,11 +269,11 @@ def write_job_to_com(
 %NProcLinda={linda}
 %mem={memory}
 %Chk={title}.chk
-#n {theory}/{basis_set} {job}
+#n {theory}/{basis} {job}
 
  {title}
 
-{charge} {multiplicity}
+{charge} {mul}
 """
     for a in atoms:
         name = str(a.name)
