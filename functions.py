@@ -43,15 +43,18 @@ def generate_figure(mo):
 
     # Make an empty 3d figure
     dpi = 300
-    pixels = 1000
-    fig = plt.figure(figsize=(pixels / dpi, pixels / dpi), dpi=dpi)
+    pixels = 800
+    fig = plt.figure(figsize=(pixels / dpi, pixels / dpi), dpi=dpi, tight_layout=True)
     ax = fig.add_subplot(projection="3d")
 
     # Hide axis planes and axis lines
     ax.set_axis_off()
 
-    # Size = 300 @ 140 dpi
-    size = dpi / 2
+    # Relative size scalar for the atoms.
+    size = pixels / dpi * 50
+
+    alpha = 0.90
+    line_color = '0.5'
 
     # Draw atoms as circles
     for num, a in enumerate(mo.atoms):
@@ -60,7 +63,7 @@ def generate_figure(mo):
         z = a.pos[2]
 
         # Size scales with cov_radius
-        ax.scatter(x, y, z, color=a.color, edgecolor="k", s=size * a.cov_radius)
+        ax.scatter(x, y, z, color=a.color, edgecolor=line_color, s=size * a.cov_radius)
 
         # Number the as.
         text_color = tuple(
@@ -71,7 +74,7 @@ def generate_figure(mo):
                 color=text_color,
                 ha="center",  # Horizontal Alignment
                 va="center",  # Vertical Alignment
-                fontsize=size * a.cov_radius / 10,
+                fontsize=size * a.cov_radius / 16,
                 )
 
     # Draw bonds as lines
@@ -87,7 +90,7 @@ def generate_figure(mo):
             x2 = bonded_a.pos[0]
             y2 = bonded_a.pos[1]
             z2 = bonded_a.pos[2]
-            ax.plot((x1, x2), (y1, y2), (z1, z2), color=(0.5, 0.5, 0.5))
+            ax.plot((x1, x2), (y1, y2), (z1, z2), color=line_color, alpha=alpha)
 
     # One liner used to force the axes to be equal in step width.
     # For example, (0,1) may appear 20px in length, while (1,0) may appear 10px in length.
