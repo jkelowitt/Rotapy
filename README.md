@@ -15,8 +15,11 @@ from each other.
 
 ![Image](https://i.imgur.com/e2AES96.png)
 
-1. Run `Rotapy.py` using Python 3.6 or higher, or the `.exe`, run the `.exe`, in the same directory as your .log files.
+1a. If running the python directly, place the .log files you wish to 'rotamate' into the root directory of Rotapy.py,
+and run Rotapy.py with python version >=3.6
 
+1b. If running the executable, place Rotapy.exe in the same location as the .log files you wish to rotamate, and run
+Rotapy.exe. When the terminal appears, you may need to press enter to get it started.
 
 2. The program will ask for the directory of a .log Gaussian geometry optimization output file.
 
@@ -44,6 +47,24 @@ from each other.
     - All possible combinations of rotamers are made.
 
 
+9. The program will ask if you want to save the rotamers to .com files, for processing, and will allow you to change the
+   parameters for the Gaussian analysis. The editable parameters are:
+    - title (Default: The name of the molecule as described below)
+    - charge (Default: 0)
+    - multiplicity (Default: 1)
+    - job (Default: Opt Freq)
+    - theory (Default: B3LPY)
+    - basis_set (Default: 6-311G(2df,2p))
+    - cores (Default: 8)
+    - memory (Default: 20gb)
+    - linda (Default: 1)
+
+
+10. The program will ask if you want to save images of the rotamers to .png files.
+
+
+11. The program gives one final warning, then performs the saving of .com and .png files to designated directories.
+
 8. Once `n` is selected for step 6, the program performs, and prints out the name of each molecule in a specific format.
     - `[compound_name]__a[anchor atom number]-c[center atom number]-[current value of angle rotation]deg`
     - For each rotation, another __a#-c#-##deg is appended to the rotamer name. For example:
@@ -52,16 +73,6 @@ from each other.
             - The atoms on the 17th atom rotated by 60° about the axis formed between the 7th and 17th atom.
             - The atoms on the 27th atom rotated by 170° about the axis formed between the 7th and 27th atom.
             - The atoms on the 18th atom rotated by 180° about the axis formed between the 17th and 18th atom.
-
-
-9. The program will ask if you want to save the rotamers to .com files, for processing, and will allow you to change the
-   parameters for the Gaussian analysis.
-
-
-10. The program will ask if you want to save images of the rotamers to .png files.
-
-
-11. The program gives one final warning, then performs the saving of .com and .png files to designated directories.
 
 ## Work remaining
 
