@@ -46,7 +46,7 @@ def yes_no(prompt: str) -> bool:
 
 
 def make_choice_list(choices: list[str],
-                     prompt: str = "Select one of the following (ex. 2): ",
+                     prompt: str = "\nSelect one of the following (ex. 2): ",
                      ret_num: bool = False):
     """
     Prints a prompt and a list of choices for the user to select from.
@@ -91,7 +91,7 @@ def make_choice_list(choices: list[str],
     return chosen
 
 
-def change_dict_values(choices: dict, prompt: str = "\nSelect one of the following:"):
+def change_dict_values(choices: dict, prompt: str = "\nSelect one of the following: "):
     """
     Prints a prompt and a list of choices for the user to select from.
 

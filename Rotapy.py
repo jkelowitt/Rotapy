@@ -230,12 +230,7 @@ def main():
 
     # Check for collisions
     collisions = 0
-
-    for rotamer in rotamers:
-        # Due to how the rotation is performed, bonds will never break, only form.
-        # Bonds being added indicates that two atoms have gotten too close to each other.
-        # The compound is not a rotamer if new bonds are formed, so tag these cases.
-
+    for rotamer in rotamers:  # ~40,000 / sec
         # Makes a list of the bond counts for each atom
         base_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
         new_bond_count = [len(rotamer.bonds[b]) for b in rotamer.bonds]
@@ -258,7 +253,7 @@ def main():
               f"These rotamers will be labelled with '##ERR', where ## indicates the number of changed bonds.")
 
     # Perform file saving
-    if save_com_files:
+    if save_com_files:  # ~1500/sec
         for molecule in tqdm(rotamers, desc="Saving com files", dynamic_ncols=True):
             write_job_to_com(molecule.atoms, title=molecule.name, output=com_output, **settings)
 
@@ -268,8 +263,7 @@ def main():
         saving = partial(save_structure, output=image_output)
 
         # Using pools results in ~4x speed performance boost when saving images.
-        # 360 rotations in 00:02:45 -> 00:00:42
-        with Pool() as pool:
+        with Pool() as pool:  # ~ 5-15/sec
             # Using imap, despite being slower than pool.map, so that we can have a progress bar.
             list(pool.imap(saving, tqdm(rotamers, desc="Saving images", dynamic_ncols=True)))
 
