@@ -18,7 +18,6 @@ write_job_to_com: Takes in a list of atoms and their cartesian coordinates such 
                   and saves the coordinates to a .com file.
 """
 
-
 from os import path, makedirs, getcwd
 
 
@@ -229,7 +228,8 @@ def write_job_to_com(
         cores: int = 8,
         memory: str = "20gb",
         linda: int = 1,
-        output: str = "", ) -> None:
+        output: str = "",
+        **kwargs) -> None:
     """
     Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
     and saves the coordinates to a .com file.
@@ -257,6 +257,8 @@ def write_job_to_com(
     linda: How many linda cores to use (set to 1 even if not being used)
 
     output: The output directory for the file
+
+    **kwargs: Is not used, it is just used to catch any extra kwargs that may get passed in.
     """
 
     d = f"""\

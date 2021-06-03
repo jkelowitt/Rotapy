@@ -268,7 +268,7 @@ def main():
     # Perform file saving
     if save_com_files:
         for molecule in tqdm(rotamers, desc="Saving com files", dynamic_ncols=True):
-            write_job_to_com(molecule.atoms, title=molecule.name, output=com_output)
+            write_job_to_com(molecule.atoms, title=molecule.name, output=com_output, **settings)
 
     if save_images:
         # args and kwargs can't be passed into the imap function, so we make a partial
