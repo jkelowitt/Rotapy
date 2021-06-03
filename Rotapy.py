@@ -35,7 +35,7 @@ from functions import (show_structure,
 from parsing import (make_choice_list,
                      yes_no,
                      parse_opt_geom_from_log,
-                     make_choice_dict,
+                     change_dict_values,
                      write_job_to_com)
 
 # Prevents errors with the executable
@@ -163,7 +163,7 @@ def main():
         }
 
         # Display default settings
-        print("\nDefault Settings:")
+        print("\nDefault Settings: ")
         for item in settings:
             print(f"\t{item} = {settings[item]}")
 
@@ -171,16 +171,11 @@ def main():
 
         # Change default options if desired
         if not non_default:
-            settings["Exit"] = ""
-            while True:
-                option = make_choice_dict(settings, prompt="\nWhich would you like to change (ex. job): ")
+            done = False
+            while not done:
+                settings, done = change_dict_values(settings)
 
-                if option in ("exit", "Exit"):
-                    break
 
-                value = input("\nWhat would you like to change it to (ex. opt): ")
-                settings[option] = value
-                print(f"Changed {option} to {value}\n")
 
     if save_images:
         image_output = input("\nWhat would you like to name the output directory for the image files: ")

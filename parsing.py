@@ -46,7 +46,7 @@ def yes_no(prompt: str) -> bool:
 
 
 def make_choice_list(choices: list[str],
-                     prompt: str = "Select one of the following (ex. 2):",
+                     prompt: str = "Select one of the following (ex. 2): ",
                      ret_num: bool = False):
     """
     Prints a prompt and a list of choices for the user to select from.
@@ -74,7 +74,7 @@ def make_choice_list(choices: list[str],
     # Ensure that the input is valid.
     while True:
         try:
-            selection = int(input("Selection: "))
+            selection = int(input(prompt))
 
             # Check that the selection is within the range of the list.
             assert 1 <= selection <= len(choices)
@@ -91,48 +91,51 @@ def make_choice_list(choices: list[str],
     return chosen
 
 
-def make_choice_dict(choices: dict,
-                     prompt: str = "Select one of the following (ex. 2):"):
+def change_dict_values(choices: dict, prompt: str = "\nSelect one of the following:"):
     """
     Prints a prompt and a list of choices for the user to select from.
 
     Parameters
     ----------
 
-    choices: Dictionary of printable keys and values for the user to choose from.
+    choices: Dictionary of printable keys and values for the user to choose from and edit.
 
     prompt: The question to ask the user prior to showing the list of choices.
 
     Returns
     -------
-    If ret_num == False
-        The item in the list which the person selected.
+    choices: The original dictionary with any changes requested
+    bool: A boolean value indicating whether or not the user type exit. True if the user typed exit.
 
-    If ret_num == True
-        The index of the user's choice within the list.
     """
     print(prompt)
-    for n, item in enumerate(choices):
-        print(f"{item} = {choices[item]}")
+    for item in choices:
+        print(f"{item}: {choices[item]}")
 
     print("Exit")
 
-    # Ensure that the input is valid.
+    # Get input and ensure that it is valid.
     while True:
-        selection = input("Selection: ")
-        try:
-            key = selection
-            if selection in ("exit", "Exit"):
-                return key
+        selection = input(prompt)
 
-            value = choices[selection]  # Will error out if selection is not in choices.
+        if selection in choices.keys():
             break
-        except KeyError:
-            print(
-                "That is not a valid selection. Please type out the full name of the item to be changed."
-            )
 
-    return key
+        elif selection in ("exit", "Exit"):
+            return choices, True
+
+        else:
+            print("Please type out one of the items to change above, to the left of the colon.")
+
+    # Get the desired new value
+    new_value = input(f"What would you like the '{selection}' set to: ")
+
+    # Change the value in the dict accordingly
+    choices[selection] = new_value
+
+    print(f"'{selection}' has been set to '{new_value}'")
+
+    return choices, False
 
 
 def make_output_folder(sub: str = "") -> str:
