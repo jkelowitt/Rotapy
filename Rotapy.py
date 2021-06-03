@@ -147,20 +147,20 @@ def main():
     save_com_files = yes_no("\nSave the rotations to .com files")
     save_images = yes_no("Save images of the the rotations to .png files")
 
+    settings = {
+        "charge": "0",
+        "mul": "1",
+        "job": "Opt Freq",
+        "theory": "B3LPY",
+        "basis set": "6-311G(2df,2p)",
+        "cores": "8",
+        "mem": "20gb",
+        "linda": "1",
+    }
+
     # Get saving locations
     if save_com_files:
         com_output = input("\nWhat would you like to name the output directory for the com files: ")
-
-        settings = {
-            "charge": "0",
-            "mul": "1",
-            "job": "Opt Freq",
-            "theory": "B3LPY",
-            "basis set": "6-311G(2df,2p)",
-            "cores": "8",
-            "mem": "20gb",
-            "linda": "1",
-        }
 
         # Display default settings
         print("\nDefault Settings: ")
@@ -174,8 +174,6 @@ def main():
             done = False
             while not done:
                 settings, done = change_dict_values(settings)
-
-
 
     if save_images:
         image_output = input("\nWhat would you like to name the output directory for the image files: ")
