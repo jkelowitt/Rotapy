@@ -46,7 +46,7 @@ def yes_no(prompt: str) -> bool:
 
 
 def make_choice_list(choices: list[str],
-                     prompt: str = "\nSelect one of the following: ",
+                     prompt: str = "\nSelections: ",
                      ret_num: bool = False):
     """
     Prints a prompt and a list of choices for the user to select from.
@@ -74,7 +74,7 @@ def make_choice_list(choices: list[str],
     # Ensure that the input is valid.
     while True:
         try:
-            selection = int(input("Selections"))
+            selection = int(input("Select one of the following (ex. 2): "))
 
             # Check that the selection is within the range of the list.
             assert 1 <= selection <= len(choices)
