@@ -169,7 +169,7 @@ def make_output_folder(sub: str = "") -> str:
 
 def parse_opt_geom_from_log(file: str) -> list:
     """
-    Given a .log file which contains an optimized geometry, extract the (x,y,z) cartesian coordinates.
+    Given a .log file which contains an optimized geometry, extract the name and (x,y,z) cartesian coordinates.
 
     Parameters
     ----------
@@ -218,6 +218,36 @@ def parse_opt_geom_from_log(file: str) -> list:
             pass
 
     return molecule
+
+
+def parse_opt_geom_from_xyz(file: str) -> list:
+    """
+    Given an .xyz file, extract the name and (x,y,z) cartesian coordinates for the molecule
+
+    Parameters
+    ----------
+    file: The name of the file to be parsed.
+
+    Returns
+    -------
+    [["Atom 1 name", X_coord, Y_coord, Z_coord],
+    ["Atom 2 name", X_coord, Y_coord, Z_coord]
+    ...]
+    """
+
+    # Read the data from the file
+    with open(file, "r+") as f:
+        lines = f.readlines()  # Caution, files may be very /very/ large.
+
+    atoms = []
+    for line in lines[2:]:
+        name = line[:2].strip()
+        x = float(line[2:17])
+        y = float(line[18:32])
+        z = float(line[33:47])
+        atoms.append([name, x, y, z])
+
+    return atoms
 
 
 def write_job_to_com(

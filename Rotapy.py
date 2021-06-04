@@ -34,6 +34,7 @@ from functions import (show_structure,
 from parsing import (make_choice_list,
                      yes_no,
                      parse_opt_geom_from_log,
+                     parse_opt_geom_from_xyz,
                      change_dict_values,
                      write_job_to_com)
 
@@ -62,8 +63,16 @@ def main():
     rotation_queue = []
     rotation_count = 1
 
-    # Get all the log files in the current directory and all subdirectories.
-    files = glob("*.log")
+    # Dictionary containing the extension and to be parsed and the function which parses it.
+    parsing_dict = {
+        "log": parse_opt_geom_from_log,
+        "xyz": parse_opt_geom_from_xyz
+    }
+
+    # Get all the files which have a parsing function.
+    files = []
+    for ext in parsing_dict:
+        files += glob(f"*.{ext}")
 
     # Check that there are log files to be found.
     if not files:
@@ -71,7 +80,10 @@ def main():
         sys.exit()
 
     choice = make_choice_list(files)
-    name_xyz = parse_opt_geom_from_log(choice)
+
+    # Select the parsing function based on the extension, then parse.
+    name_xyz = parsing_dict[choice[choice.index(".") + 1:]](choice)
+
     atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in name_xyz]
     molecule_name = input("What is the name of this compound: ")
 
