@@ -12,17 +12,16 @@ multiple rotations may be performed simultaneously, such as in a nested for loop
 Main Changes remaining:
     - Theres a lot of faffing about switching between atom numbers and the atom itself.
         There's got to be a better way to handle this.
-        Try looking up mathematica graph based code to find a better way to code Molecule
+    - Try looking up mathematical graph based code to find a better way to code Molecule
 
 """
-
 import multiprocessing
 import sys
 from functools import partial
 from glob import glob
+from math import ceil
 from multiprocessing import Pool
 
-from numpy import arange
 from tqdm import tqdm
 
 from classes import Molecule, Atom
@@ -111,7 +110,8 @@ def main():
             f"\nThe {len(rotate_nums)} atom(s) attached to the center atom will be scanned through their rotation."
         )
         angle = verified_input("What step size should the scan perform, in degrees (ex. 45deg -> 8 rotamers): ", float)
-        degrees = arange(angle, 360, angle)
+        count = ceil((360 - angle) / angle)
+        degrees = [n * angle for n in range(count)]
 
         rotation_queue.append(
             {

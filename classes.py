@@ -6,13 +6,21 @@ Molecule: A molecule class used to hold atoms and the bonds between those atoms.
 """
 
 from dataclasses import dataclass, field
+from math import sqrt
 
-from numpy import array
-from numpy.linalg import norm
+from numba import jit
 
 from data_dicts import cov_rads, bond_threshold
 
 
+@jit(nopython=True)
+def distance(pt1: tuple[float, float, float], pt2: tuple[float, float, float]) -> float:
+    """Returns the distance between two three-dimensional points"""
+    value: float = sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
+    return value
+
+
+# noinspection PyUnresolvedReferences
 @dataclass(eq=True, unsafe_hash=True)
 class Atom:
     """
@@ -51,6 +59,7 @@ class Atom:
         self.color: tuple[float, float, float] = colors[self.name]
 
 
+# noinspection PyUnresolvedReferences
 class Molecule:
     """
     A molecule class used to hold atoms and the bonds between those atoms.
@@ -124,8 +133,8 @@ class Molecule:
             new_bonds = []
             for other in self.atoms:
                 max_bond_length = bond_threshold * (other.cov_radius + a.cov_radius)
-                distance = norm(array(other.pos) - array(a.pos))
-                if other != a and distance <= max_bond_length:
+                d = distance(other.pos, a.pos)
+                if other != a and d <= max_bond_length:
                     new_bonds.append(other)
 
             self.bonds[a] = list(new_bonds).copy()
