@@ -111,7 +111,7 @@ def main():
         )
         angle = verified_input("What step size should the scan perform, in degrees (ex. 45deg -> 8 rotamers): ", float)
         count = ceil((360 - angle) / angle)
-        degrees = [n * angle for n in range(count)]
+        degrees = [(n + 1) * angle for n in range(count)]
 
         rotation_queue.append(
             {
