@@ -181,6 +181,10 @@ def main():
     # Pause for preparation and alert the user to the download file count.
     input(f"\nPress enter to perform the {rotation_count} rotations and save the files.")
 
+    # This line is for aesthetic considerations.
+    # The larger the thing, the less I want to see it spin.
+    rotation_queue.sort(key=lambda x: len(x["rotatees"]), reverse=True)
+
     # Perform rotation calculations
     # ~10/sec
     with tqdm(total=rotation_count, desc="Performing rotation calculations", dynamic_ncols=True) as pbar:
