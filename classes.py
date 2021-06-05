@@ -94,14 +94,14 @@ class Molecule:
 
     def add_atom(self, other: Atom) -> None:
         """Add an atom to the molecule"""
-        if not isinstance(other, type(Atom)):
+        if isinstance(other, type(Atom)):
             raise TypeError(f"Must add an Atom to the molecule, not {type(other)}")
 
         self.atoms.append(other)
 
     def remove_atom(self, a) -> None:
         """Remove an atom from the molecule"""
-        if not isinstance(a, type(Atom)):
+        if isinstance(a, type(Atom)):
             raise TypeError(f"Must add an Atom to the molecule, not {type(a)}")
 
         self.atoms.remove(a)
