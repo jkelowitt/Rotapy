@@ -1,5 +1,4 @@
 /jMonOpt_removing_GUI.m
-/terptest2.log
 /testing.py
 /geom_functions.py
 /jMonOpt.m
@@ -8,7 +7,6 @@
 /.mypy_cache/
 /.idea/
 *.com
-*.log
 /venv
 /*.spec
 /build/
