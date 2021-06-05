@@ -74,6 +74,8 @@ def main():
     for ext in parsing_dict:
         files += glob(f"**/*.{ext}", recursive=True)
 
+    files.sort(key=lambda x: len(x))
+
     # Check that there are valid files to be found.
     if not files:
         print("No valid files found in the current directory or lower.")
