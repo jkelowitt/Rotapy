@@ -40,6 +40,8 @@ def generate_figure(mo: Molecule):
 
     ax: The matplotlib axes of the molecule.
     """
+    # Update the bond graph
+    mo.make_bond_graph()
 
     # Make an empty 3d figure
     dpi = 300
@@ -202,6 +204,7 @@ def bonded_atom_search(molecule: Molecule, start: Atom, wall: list) -> list:
     important: The list of atoms which have a path back to the start atom,
                excluding any paths through the wall atoms.
     """
+    molecule.make_bond_graph()
     bonded = lambda x: molecule.bonds[x]
     important = [start]
 

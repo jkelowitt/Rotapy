@@ -246,6 +246,7 @@ def main():
                         new_rotamer.replace_atom(old, new)
 
                     new_rotamer.name += f"__a{rotation['ancr']}-c{rotation['center']}-{turn}deg"
+                    new_rotamer.make_bond_graph()
                     rotamers.append(new_rotamer)
                     pbar.update(1)
 

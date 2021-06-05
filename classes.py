@@ -98,7 +98,6 @@ class Molecule:
             raise TypeError(f"Must add an Atom to the molecule, not {type(other)}")
 
         self.atoms.append(other)
-        self.make_bond_graph()
 
     def remove_atom(self, a) -> None:
         """Remove an atom from the molecule"""
@@ -106,7 +105,6 @@ class Molecule:
             raise TypeError(f"Must add an Atom to the molecule, not {type(a)}")
 
         self.atoms.remove(a)
-        self.make_bond_graph()
 
     def replace_atom(self, old_num, new_atom) -> None:
         """
@@ -115,7 +113,6 @@ class Molecule:
         Atom 2 will remain atom 2 even if atom 1 is replaced.
         """
         self.atoms[old_num] = new_atom
-        self.make_bond_graph()
 
     def make_bond_graph(self) -> None:
         """
@@ -123,6 +120,9 @@ class Molecule:
         the distance to every other atom. If the distance is within the sum of the covalent
         radii for each atom (within some margin of error), they are bonded. This bondis recorded
         in the dictionary entry for that atom.
+
+        This is one of the slowest functions in this entire program, second only to the save_figure
+        function. Any improvements to this function or its components yield massive returns.
         """
 
         self.bonds = dict()
