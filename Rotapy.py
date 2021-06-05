@@ -91,7 +91,7 @@ def main():
     name_xyz = parsing_dict[choice[choice.index(".") + 1:]](choice)
 
     atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in name_xyz]
-    molecule_name = input("What is the name of this compound: ")
+    molecule_name = input("\nWhat is the name of this compound: ")
 
     base_compound = Molecule(molecule_name, atoms)
 
@@ -106,7 +106,7 @@ def main():
         if yes_no("View numbered structure: "):
             show_structure(base_compound)
 
-        ancr_atom_num = verified_input("Which atom is the anchor atom (ex. 7): ", int)
+        ancr_atom_num = verified_input("\nWhich atom is the anchor atom (ex. 7): ", int)
         center_atom_num = verified_input("Which atom is the center atom (ex. 27): ", int)
 
         base_compound = center_on_atom(base_compound, center_atom_num)
