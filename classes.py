@@ -8,12 +8,12 @@ Molecule: A molecule class used to hold atoms and the bonds between those atoms.
 from dataclasses import dataclass, field
 from math import sqrt
 
-from numba import jit
+from numba import njit
 
 from data_dicts import cov_rads, bond_threshold
 
 
-@jit(nopython=True)
+@njit
 def distance(pt1: tuple[float, float, float], pt2: tuple[float, float, float]) -> float:
     """Returns the distance between two three-dimensional points"""
     value: float = sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
