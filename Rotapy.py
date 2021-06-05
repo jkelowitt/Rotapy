@@ -74,9 +74,13 @@ def main():
     for ext in parsing_dict:
         files += glob(f"*.{ext}")
 
-    # Check that there are log files to be found.
+    # Check that there are valid files to be found.
     if not files:
-        input("No log files found in the current directory or lower.")
+        print("No valid files found in the current directory or lower.")
+        print("Valid file types:")
+        for ext in parsing_dict:
+            print(f"\t.{ext}")
+        input("\nPress enter to exit: ")
         sys.exit()
 
     choice = make_choice_list(files)
