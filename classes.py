@@ -16,8 +16,7 @@ from data_dicts import cov_rads, bond_threshold
 @njit
 def distance(pt1: tuple[float, float, float], pt2: tuple[float, float, float]) -> float:
     """Returns the distance between two three-dimensional points"""
-    value: float = sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
-    return value
+    return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
 
 
 # noinspection PyUnresolvedReferences
