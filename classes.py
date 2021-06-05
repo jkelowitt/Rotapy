@@ -92,10 +92,9 @@ class Molecule:
         self.bonds: dict = dict().copy()
         self.make_bond_graph()
 
-
     def add_atom(self, other: Atom) -> None:
         """Add an atom to the molecule"""
-        if isinstance(other, type(Atom)):
+        if not isinstance(other, type(Atom)):
             raise TypeError(f"Must add an Atom to the molecule, not {type(other)}")
 
         self.atoms.append(other)
@@ -103,6 +102,9 @@ class Molecule:
 
     def remove_atom(self, a) -> None:
         """Remove an atom from the molecule"""
+        if not isinstance(a, type(Atom)):
+            raise TypeError(f"Must add an Atom to the molecule, not {type(a)}")
+
         self.atoms.remove(a)
         self.make_bond_graph()
 
