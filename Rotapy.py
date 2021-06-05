@@ -252,7 +252,8 @@ def main():
 
     # Check for collisions
     collisions = 0
-    for rotamer in rotamers:  # ~40,000 / sec
+    # Hilariously fast
+    for rotamer in tqdm(rotamers, desc="Checking for errors", dynamic_ncols=True):
         # Makes a list of the bond counts for each atom
         base_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
         new_bond_count = [len(rotamer.bonds[b]) for b in rotamer.bonds]
