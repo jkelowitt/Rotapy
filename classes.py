@@ -92,10 +92,6 @@ class Molecule:
         self.bonds: dict = dict().copy()
         self.make_bond_graph()
 
-    # @staticmethod
-    # def distance(pt1: tuple[float, float, float], pt2: tuple[float, float, float]) -> float:
-    #     """Returns the distance between two points (x, y, z) in 3D"""
-    #     return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
 
     def add_atom(self, other: Atom) -> None:
         """Add an atom to the molecule"""
