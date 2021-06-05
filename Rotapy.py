@@ -72,7 +72,7 @@ def main():
     # Get all the files which have a parsing function.
     files = []
     for ext in parsing_dict:
-        files += glob(f"**/*.{ext}")
+        files += glob(f"**/*.{ext}", recursive=True)
 
     # Check that there are valid files to be found.
     if not files:
