@@ -26,7 +26,7 @@ from classes import Atom, Molecule
 from parsing import make_output_folder
 
 
-def generate_figure(mo):
+def generate_figure(mo: Molecule):
     """
     Generate a figure of the molecule and bonds
 
@@ -228,7 +228,6 @@ def verified_input(prompt: str = "", verify: type = int):
     Returns
     -------
     data: Input from the user with the type, verify.
-
 
     """
     while True:
