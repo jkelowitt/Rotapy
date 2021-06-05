@@ -204,7 +204,6 @@ def main():
     rotation_queue.sort(key=lambda x: len(x["rotatees"]), reverse=True)
 
     # Perform rotation calculations
-    # ~10/sec
     with tqdm(total=rotation_count, desc="Performing rotation calculations", dynamic_ncols=True) as pbar:
 
         # Step through the rotation queue
@@ -276,7 +275,7 @@ def main():
               f"These rotamers will be labelled with '##ERR', where ## indicates the number of changed bonds.")
 
     # Perform file saving
-    if save_com_files:  # ~1500/sec
+    if save_com_files:
         for molecule in tqdm(rotamers, desc="Saving com files", dynamic_ncols=True):
             write_job_to_com(molecule.atoms, title=molecule.name, output=com_output, **settings)
 
@@ -286,7 +285,7 @@ def main():
         saving = partial(save_structure, output=image_output)
 
         # Using pools results in ~4x speed performance boost when saving images.
-        with Pool() as pool:  # ~ 5-15/sec
+        with Pool() as pool:
             # Using imap, despite being slower than pool.map, so that we can have a progress bar.
             list(pool.imap(saving, tqdm(rotamers, desc="Saving images", dynamic_ncols=True)))
 
