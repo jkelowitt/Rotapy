@@ -118,7 +118,7 @@ class Molecule:
         """
         Creates a dictionary with an entry for every atom in the molecule. For each atom, find
         the distance to every other atom. If the distance is within the sum of the covalent
-        radii for each atom (within some margin of error), they are bonded. This bondis recorded
+        radii for each atom (within some margin of error), they are bonded. This bond is recorded
         in the dictionary entry for that atom.
 
         This is one of the slowest functions in this entire program, second only to the save_figure
