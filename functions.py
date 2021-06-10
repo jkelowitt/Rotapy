@@ -147,11 +147,13 @@ def center_on_atom(mo: Molecule, atom_number: int) -> Molecule:
     dy = selected_atom.pos[1]
     dz = selected_atom.pos[2]
 
-    new_mo = Molecule(name=mo.name, atoms=list().copy())
+    new_atoms = list()
     for at in mo.atoms:
         new_position = (at.pos[0] - dx, at.pos[1] - dy, at.pos[2] - dz)
         new_at = Atom(name=at.name, pos=new_position)
-        new_mo.add_atom(new_at)
+        new_atoms.append(new_at)
+
+    new_mo = Molecule(name=mo.name, atoms=new_atoms)
 
     return new_mo
 
