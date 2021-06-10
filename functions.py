@@ -179,7 +179,7 @@ def rotate_point_around_vector(point: tuple[float, float, float],
 
     # This quaternion object will perform the rotation encoded into its initialization.
     # The rotation vector is of unit length.
-    rotation_quaternion = pq.Quaternion(axis=vector, degrees=deg).unit
+    rotation_quaternion = pq.Quaternion(axis=vector, degrees=deg)
 
     # Perform the rotation
     new_vec = rotation_quaternion.rotate(point)
