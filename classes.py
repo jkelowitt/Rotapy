@@ -10,7 +10,7 @@ from math import sqrt
 
 from numba import njit
 
-from data_dicts import cov_rads, bond_threshold
+from data_dicts import cov_rads, bond_threshold, atom_color
 
 
 @njit
@@ -46,16 +46,8 @@ class Atom:
     pos: tuple[float, float, float] = field(default=(0, 0, 0))
 
     def __post_init__(self):
-        colors = {
-            "C": (0, 0, 0),
-            "H": (1, 1, 1),
-            "O": (1, 0, 0),
-            "S": (1, 1, 0),
-            "Cl": (0, 1, 0),
-        }
-
         self.cov_radius: float = cov_rads[self.name]
-        self.color: tuple[float, float, float] = colors.get(self.name, (1, 0, 1))  # Default color magenta
+        self.color: tuple[float, float, float] = atom_color.get(self.name, (1, 0, 1))  # Default color magenta
 
 
 # noinspection PyUnresolvedReferences
@@ -89,8 +81,7 @@ class Molecule:
     def __init__(self, name: str, atoms: list):
         self.name = name
         self.atoms = atoms.copy()  # No mutability please
-        self.bonds: dict = dict().copy()
-        self.make_bond_graph()
+        self.bonds: dict = dict()
 
     def add_atom(self, other: Atom) -> None:
         """Add an atom to the molecule"""

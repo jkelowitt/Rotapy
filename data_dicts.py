@@ -2,12 +2,21 @@
 Dictionaries containing useful data for elements.
 
 Dictionaries:
+    - atom_color: Color representations
     - cov_rads: Covalent Radii
     - at_masses: Atomic Masses
 
 Taken from TMPChem's Computational Chemistry github page:
 https://github.com/tmpchem/computational_chemistry
 """
+
+atom_color = {
+    "C": (0, 0, 0),
+    "H": (1, 1, 1),
+    "O": (1, 0, 0),
+    "S": (1, 1, 0),
+    "Cl": (0, 1, 0),
+}
 
 # Margin of error on whether or not to make a bond
 # Chosen arbitrarily.
