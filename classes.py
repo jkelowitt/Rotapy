@@ -55,7 +55,7 @@ class Atom:
         }
 
         self.cov_radius: float = cov_rads[self.name]
-        self.color: tuple[float, float, float] = colors[self.name]
+        self.color: tuple[float, float, float] = colors.get(self.name, (1, 0, 1))
 
 
 # noinspection PyUnresolvedReferences
