@@ -43,7 +43,7 @@ def generate_figure(mo: Molecule):
     # Update the bond graph
     mo.make_bond_graph()
 
-    # Make an empty 3d figure
+    # Make an empty, square, pseudo-3d figure
     dpi = 300
     pixels = 800
     fig = plt.figure(figsize=(pixels / dpi, pixels / dpi), dpi=dpi, tight_layout=True)
@@ -55,6 +55,7 @@ def generate_figure(mo: Molecule):
     # Relative size scalar for the atoms.
     size = pixels / dpi * 50
 
+    # Bonds are slightly see through and gray.
     alpha = 0.90
     line_color = '0.5'
 
