@@ -66,13 +66,13 @@ Rotapy.exe. When the terminal appears, you may need to press enter to get it sta
 11. The program gives one final warning, then performs the saving of .com and .png files to designated directories.
 
 8. Once `n` is selected for step 6, the program performs, and prints out the name of each molecule in a specific format.
-    - `[compound_name]__a[anchor atom number]-c[center atom number]-[current value of angle rotation]deg`
-    - For each rotation, another __a#-c#-##deg is appended to the rotamer name. For example:
-        - `terpineol4__a7-c17-60deg__a7-c27-170deg__a17-c18-180deg`
-        - The compound Terpineol4 has:
-            - The atoms on the 17th atom rotated by 60° about the axis formed between the 7th and 17th atom.
-            - The atoms on the 27th atom rotated by 170° about the axis formed between the 7th and 27th atom.
-            - The atoms on the 18th atom rotated by 180° about the axis formed between the 17th and 18th atom.
+   - `[compound_name]_a[anchor atom number]c[center atom number]d[current value of angle rotation]`
+   - For each rotation, another __a#-c#-##deg is appended to the rotamer name. For example:
+      - `terpineol4_a7c17d60_a7c27d170_a17c18d180`
+      - The compound Terpineol4 has:
+         - The atoms on the 17th atom rotated by 60° about the axis formed between the 7th and 17th atom.
+         - The atoms on the 27th atom rotated by 170° about the axis formed between the 7th and 27th atom.
+         - The atoms on the 18th atom rotated by 180° about the axis formed between the 17th and 18th atom.
 
 ## Work remaining
 
