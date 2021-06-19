@@ -298,7 +298,7 @@ def write_job_to_com(
 %NProcShared={cores}
 %NProcLinda={linda}
 %mem={memory}
-%Chk={title}.chk
+%Chk={title}.mo
 #n {theory}/{basis} {job}
 
  {title}
