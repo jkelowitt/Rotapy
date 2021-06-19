@@ -307,4 +307,4 @@ if __name__ == "__main__":
 
     main()
 
-    input("Calculating and saving complete. Press enter to close. ")
+    input("\nCalculating and saving complete. Press enter to close. ")
