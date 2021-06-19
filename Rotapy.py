@@ -252,9 +252,10 @@ def main():
                     pbar.update(1)
 
     # Rename molecules sequentially if requested
+    base_name = base_compound.name
     if sequential_naming:
-        for i, molecule in tqdm(enumerate(rotamers), desc="Renaming sequentially", dynamic_ncols=True):
-            molecule.name = f'{base_compound.name}_{i}'
+        for i, molecule in enumerate(rotamers):
+            molecule.name = f'{base_name}_{i + 1}'
 
     # Check for collisions
     collisions = 0
