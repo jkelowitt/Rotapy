@@ -169,7 +169,7 @@ def main():
         "charge": "0",
         "mul": "1",
         "job": "Opt Freq",
-        "theory": "B3LPY",
+        "theory": "B3LYP",
         "basis": "6-311G(2df,2p)",
         "cores": "8",
         "memory": "20gb",
