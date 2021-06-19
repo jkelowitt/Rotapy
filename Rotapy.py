@@ -299,5 +299,6 @@ def main():
 
 
 if __name__ == "__main__":
+    print("~~~~~Rotapy~~~~~\nAuthor: Jackson Elowitt\nRepo: https://github.com/jkelowitt/Rotapy\nVersion: v1.7")
     main()
     input("Calculating and saving complete. Press enter to close. ")
