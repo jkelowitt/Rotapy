@@ -164,6 +164,7 @@ def main():
     # Get saving preferences
     save_com_files = yes_no("\nSave the rotations to .com files")
     save_images = yes_no("Save images of the the rotations to .png files")
+    sequential_naming = yes_no("Would you like to name the files sequentially")
 
     settings = {
         "charge": "0",
@@ -249,6 +250,11 @@ def main():
                     new_rotamer.make_bond_graph()
                     rotamers.append(new_rotamer)
                     pbar.update(1)
+
+    # Rename molecules sequentially if requested
+    if sequential_naming:
+        for i, molecule in tqdm(enumerate(rotamers), desc="Renaming sequentially", dynamic_ncols=True):
+            molecule.name = f'{base_compound.name}_{i}'
 
     # Check for collisions
     collisions = 0
