@@ -299,6 +299,12 @@ def main():
 
 
 if __name__ == "__main__":
-    print("~~~~~Rotapy~~~~~\nAuthor: Jackson Elowitt\nRepo: https://github.com/jkelowitt/Rotapy\nVersion: v1.7")
+    print("Rotapy".center(50, "~"))
+    print("Author: Jackson Elowitt")
+    print("Repo: https://github.com/jkelowitt/Rotapy")
+    print("Version: v1.7")
+    print("".center(50, "~"))
+
     main()
+
     input("Calculating and saving complete. Press enter to close. ")
