@@ -16,7 +16,6 @@ Main Changes remaining:
 
 """
 import multiprocessing
-import sys
 from functools import partial
 from glob import glob
 from math import ceil
