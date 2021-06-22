@@ -269,6 +269,21 @@ def parse_geom_from_com(file: str) -> list:
     with open(file, "r+") as f:
         lines = f.readlines()  # Caution, files may be very /very/ large.
 
+    # Explanation of the Regex Pattern: [A-Za-z]{1,2} +[-.\d ]+
+    #
+    # "[A-Za-z]{1,2}"
+    # First give me 1 to 2 letters, either upper or lower case.
+    # This will capture the abbreviations of all the elements.
+    #
+    # " +"
+    # Then give me one or more spaces
+    # This forces there to be a space between the element and the coordinates
+    # Excludes some parts of the % headers
+    #
+    # "[-.\d ]+"
+    # Give me one or more dashes, periods, digits, or spaces.
+    # Matches the coordinates after the element name
+    #
     pattern = re.compile(r"[A-Za-z]{1,2} +[-.\d ]+")
     matches = re.findall(pattern, "\n".join(lines))
 
