@@ -167,7 +167,7 @@ def make_output_folder(sub: str = "") -> str:
     return dir_path
 
 
-def parse_opt_geom_from_log(file: str) -> list:
+def parse_geom_from_log(file: str) -> list:
     """
     Given a .log file which contains an optimized geometry, extract the name and (x,y,z) cartesian coordinates.
 
@@ -220,7 +220,7 @@ def parse_opt_geom_from_log(file: str) -> list:
     return molecule
 
 
-def parse_opt_geom_from_xyz(file: str) -> list:
+def parse_geom_from_xyz(file: str) -> list:
     """
     Given an .xyz file, extract the name and (x,y,z) cartesian coordinates for the molecule
 

@@ -32,8 +32,8 @@ from functions import (show_structure,
                        verified_input)
 from parsing import (make_choice_list,
                      yes_no,
-                     parse_opt_geom_from_log,
-                     parse_opt_geom_from_xyz,
+                     parse_geom_from_log,
+                     parse_geom_from_xyz,
                      change_dict_values,
                      write_job_to_com)
 
@@ -64,8 +64,8 @@ def main():
 
     # Dictionary containing the extension and to be parsed and the function which parses it.
     parsing_dict = {
-        "log": parse_opt_geom_from_log,
-        "xyz": parse_opt_geom_from_xyz
+        "log": parse_geom_from_log,
+        "xyz": parse_geom_from_xyz,
     }
 
     files = []
