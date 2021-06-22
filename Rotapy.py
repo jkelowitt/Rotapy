@@ -307,7 +307,7 @@ if __name__ == "__main__":
     print("Rotapy".center(50, "~"))
     print("Author: Jackson Elowitt")
     print("Repo: https://github.com/jkelowitt/Rotapy")
-    print("Version: v1.7")
+    print("Version: v1.8")
     print("".center(50, "~"))
 
     main()
