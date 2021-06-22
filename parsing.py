@@ -17,7 +17,7 @@ parse_opt_geom_from_log: Given a .log file which contains an optimized geometry,
 write_job_to_com: Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
                   and saves the coordinates to a .com file.
 """
-
+import re
 from os import path, makedirs, getcwd
 
 
@@ -245,6 +245,39 @@ def parse_geom_from_xyz(file: str) -> list:
         x = float(line[2:17])
         y = float(line[18:32])
         z = float(line[33:47])
+        atoms.append([name, x, y, z])
+
+    return atoms
+
+
+def parse_geom_from_com(file: str) -> list:
+    """
+    Given a .com file, extract the name and (x,y,z) cartesian coordinates for the molecule
+
+    Parameters
+    ----------
+    file: The name of the file to be parsed.
+
+    Returns
+    -------
+    [["Atom 1 name", X_coord, Y_coord, Z_coord],
+    ["Atom 2 name", X_coord, Y_coord, Z_coord]
+    ...]
+    """
+
+    # Read the data from the file
+    with open(file, "r+") as f:
+        lines = f.readlines()  # Caution, files may be very /very/ large.
+
+    pattern = re.compile(r"[A-Za-z]{1,2} +[-|\.|\d| ]+")
+    matches = re.findall(pattern, "\n".join(lines))
+
+    atoms = []
+    for match in matches:
+        name = match[:2].strip()
+        x = float(match[2:17])
+        y = float(match[18:32])
+        z = float(match[33:47])
         atoms.append([name, x, y, z])
 
     return atoms

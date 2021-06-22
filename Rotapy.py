@@ -34,6 +34,7 @@ from parsing import (make_choice_list,
                      yes_no,
                      parse_geom_from_log,
                      parse_geom_from_xyz,
+                     parse_geom_from_com,
                      change_dict_values,
                      write_job_to_com)
 
@@ -66,6 +67,7 @@ def main():
     parsing_dict = {
         "log": parse_geom_from_log,
         "xyz": parse_geom_from_xyz,
+        "com": parse_geom_from_com
     }
 
     files = []
