@@ -69,21 +69,25 @@ def main():
         "xyz": parse_opt_geom_from_xyz
     }
 
-    # Get all the files which have a parsing function.
     files = []
-    for ext in parsing_dict:
-        files += glob(f"**/*.{ext}", recursive=True)
-
-    files.sort(key=lambda x: len(x))
-
-    # Check that there are valid files to be found.
-    if not files:
-        print("No valid files found in the current directory or lower.")
+    while not files:
+        # Get the directory from the user
+        print("\nEnter the directory which contains one of the following files.")
         print("Valid file types:")
         for ext in parsing_dict:
             print(f"\t.{ext}")
-        input("\nPress enter to exit: ")
-        sys.exit()
+        directory = input("Directory: ")
+
+        # Get all the files
+        # which have a parsing function.
+        for ext in parsing_dict:
+            files += glob(f"{directory}/*.{ext}")
+
+        files.sort(key=lambda x: len(x))
+
+        # Check that there are valid files to be found.
+        if not files:
+            print("\nNo valid files found in the selected directory.")
 
     choice = make_choice_list(files)
 
