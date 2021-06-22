@@ -269,7 +269,7 @@ def parse_geom_from_com(file: str) -> list:
     with open(file, "r+") as f:
         lines = f.readlines()  # Caution, files may be very /very/ large.
 
-    pattern = re.compile(r"[A-Za-z]{1,2} +[-|\.|\d| ]+")
+    pattern = re.compile(r"[A-Za-z]{1,2} +[-.\d ]+")
     matches = re.findall(pattern, "\n".join(lines))
 
     atoms = []
