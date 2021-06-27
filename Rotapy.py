@@ -23,20 +23,10 @@ from multiprocessing import Pool
 
 from tqdm import tqdm
 
-from classes import Molecule, Atom
-from functions import (show_structure,
-                       save_structure,
-                       bonded_atom_search,
-                       center_on_atom,
-                       rotate_point_around_vector,
-                       verified_input)
-from parsing import (make_choice_list,
-                     yes_no,
-                     parse_geom_from_log,
-                     parse_geom_from_xyz,
-                     parse_geom_from_com,
-                     change_dict_values,
-                     write_job_to_com)
+from classes import Atom, Molecule
+from functions import (bonded_atom_search, center_on_atom, check_bonds, rotate_point_around_vector, save_structure,
+                       show_structure, verified_input)
+from parsing import (change_dict_values, make_choice_list, parsing_dict, write_job_to_com, yes_no)
 
 # Prevents errors with the executable
 multiprocessing.freeze_support()
