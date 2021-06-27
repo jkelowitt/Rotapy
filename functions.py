@@ -20,6 +20,7 @@ verified_input: Verify that the user has input a value which can be converted to
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pyquaternion as pq
 
 from classes import Atom, Molecule
@@ -246,3 +247,38 @@ def verified_input(prompt: str = "", verify: type = int):
             print(f"Error: Must be of type {verify.__name__}")
 
     return data
+
+
+def check_bonds(m1, m2):
+    """Checks whether the two molecules have the same bonding structure
+    If the bond count lists are not exactly equal, a collision occurred
+    Only a very complex scenario would really defeat this detection method.
+    A complex problem == complex solution, thus, I procrastinate.
+    """
+    # Makes a list of the bond counts for each atom
+    m1struct = [len(m1.bonds[b]) for b in m1.bonds]
+    m2struct = [len(m2.bonds[b]) for b in m2.bonds]
+
+    m1struct.sort()
+    m2struct.sort()
+
+    bond_diff = abs(sum(m1struct) - sum(m2struct))
+    return bond_diff
+
+
+def randomly_orient(mo):
+    """Randomly orient a given molecule in 3d space"""
+    mo = center_on_atom(mo, 0)
+    new_mo = Molecule(name=mo.name, atoms=list())
+
+    center_on_atom(mo, 0)
+
+    rand_axis = tuple(np.random.uniform(size=(3,)))
+    rand_deg = np.random.uniform() * 360
+
+    for atom in mo.atoms:
+        new_atom_pos = rotate_point_around_vector(point=atom.pos, vector=rand_axis, deg=rand_deg)
+        new_atom = Atom(atom.name, new_atom_pos)
+        new_mo.add_atom(new_atom)
+
+    return new_mo
