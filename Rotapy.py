@@ -251,20 +251,9 @@ def main():
     collisions = 0
     # Hilariously fast
     for rotamer in tqdm(rotamers, desc="Checking for errors", dynamic_ncols=True):
-        # Makes a list of the bond counts for each atom
-        base_bond_count = [len(originator.bonds[b]) for b in originator.bonds]
-        new_bond_count = [len(rotamer.bonds[b]) for b in rotamer.bonds]
-
-        base_bond_count.sort()
-        new_bond_count.sort()
-
-        # If the bond count lists are not exactly equal, a collision occurred
-        # Only a very complex scenario would really defeat this detection method.
-        # A complex problem == complex solution, thus, I procrastinate.
-        if new_bond_count != base_bond_count:
-            bond_diff = sum(new_bond_count) - sum(base_bond_count)
-            rotamer.name += f"_{int(bond_diff / 2)}ERR"  # Bonds are two way, thus divide by 2
-
+        diff = check_bonds(originator, rotamer)
+        if diff:
+            rotamer.name += f"_{int(diff / 2)}ERR"  # Bonds are two way, thus divide by 2
             collisions += 1
 
     # Alert the user to the presence of bad rotamers
