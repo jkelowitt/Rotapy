@@ -54,11 +54,6 @@ def main():
     rotation_count = 1
 
     # Dictionary containing the extension and to be parsed and the function which parses it.
-    parsing_dict = {
-        "log": parse_geom_from_log,
-        "xyz": parse_geom_from_xyz,
-        "com": parse_geom_from_com
-    }
 
     files = []
     while not files:
