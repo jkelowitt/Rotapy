@@ -18,7 +18,9 @@ write_job_to_com: Takes in a list of atoms and their cartesian coordinates such 
                   and saves the coordinates to a .com file.
 """
 import re
-from os import path, makedirs, getcwd
+from os import getcwd, makedirs, path
+
+from classes import Molecule
 
 
 def yes_no(prompt: str) -> bool:
@@ -299,7 +301,7 @@ def parse_geom_from_com(file: str) -> list:
 
 
 def write_job_to_com(
-        atoms: list,
+        mo: Molecule,
         title: str = "molecule_name",
         charge: int = 0,
         mul: float = 1,
@@ -317,7 +319,7 @@ def write_job_to_com(
 
     Parameters
     ----------
-    atoms: The atoms to be written
+    mo: The molecule to be written
 
     title: The title for the file
 
@@ -353,7 +355,7 @@ def write_job_to_com(
 
 {charge} {mul}
 """
-    for a in atoms:
+    for a in mo.atoms:
         name = str(a.name)
         x = str(a.pos[0])[:14].rjust(15)
         y = str(a.pos[1])[:14].rjust(15)
