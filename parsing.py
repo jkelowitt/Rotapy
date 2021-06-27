@@ -367,3 +367,10 @@ def write_job_to_com(
 
     with open(fr"{directory}\{title}.com", "w+") as file:
         file.write(d)
+
+
+parsing_dict = {
+    "log": parse_geom_from_log,
+    "xyz": parse_geom_from_xyz,
+    "com": parse_geom_from_com
+}
