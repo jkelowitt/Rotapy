@@ -69,8 +69,10 @@ layout = [
 ]
 
 
-def show_plot():
-    ...
+def show_plot(e, v):
+    file = v["input_file"]
+    molecule = make_molecule_from_file(file)
+    show_structure(molecule, title=molecule.name)
 
 
 def run_calculations():
@@ -116,9 +118,9 @@ while True:  # Event Loop
             window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
 
         elif event == "show_plot":
-            """Reads the current import file, and shows the structure in a non-blocking way"""
+            """Reads the current import file, and shows the structure"""
             ws.Beep(1000, 100)
-            show_plot()
+            show_plot(event, values)
 
         elif event == "execute":
             """Performs all the rotations in the rotation queue"""
