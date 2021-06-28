@@ -18,9 +18,9 @@ write_job_to_com: Takes in a list of atoms and their cartesian coordinates such 
                   and saves the coordinates to a .com file.
 """
 import re
-from os import getcwd, makedirs, path
 
-from classes import Molecule
+from classes import Atom, Molecule
+from functions import center_on_atom, make_output_folder
 
 
 def yes_no(prompt: str) -> bool:
@@ -138,35 +138,6 @@ def change_dict_values(choices: dict, prompt: str = "\nSelect one of the followi
     print(f"'{selection}' has been set to '{new_value}'")
 
     return choices, False
-
-
-def make_output_folder(sub: str = "") -> str:
-    """
-    Makes a directory in the script location to output the downloaded files
-
-    Parameters
-    ----------
-    sub: The name of the directory to be made.
-
-    Returns
-    -------
-    dir_path: The directory pointing to :sub:
-
-    """
-    # Finds the current directory
-    dir_path = getcwd()
-
-    # Makes the path for the new folder
-    dir_path = dir_path + fr"\{sub}"
-
-    # If the folder doesn't exist, make it.
-    if not path.exists(dir_path):
-        try:
-            makedirs(dir_path)
-        except FileExistsError:
-            # Sometimes this error pops when using threading or multiprocessing.
-            pass
-    return dir_path
 
 
 def parse_geom_from_log(file: str) -> list:
@@ -367,6 +338,17 @@ def write_job_to_com(
 
     with open(fr"{directory}\{title}.com", "w+") as file:
         file.write(d)
+
+
+def make_molecule_from_file(file):
+    """Given a file, return a Molecule object with the molecule contained in the file"""
+    xyz = parsing_dict[file[file.index(".") + 1:]](file)
+    name = file.split("/")[-1]
+    name = name[:name.index(".")]
+    atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in xyz]
+    molecule = Molecule(name, atoms)
+    molecule = center_on_atom(molecule, 0)
+    return molecule
 
 
 parsing_dict = {
