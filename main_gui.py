@@ -1,15 +1,15 @@
 """
 This is a working file when transferring over to a gui based input format
 """
-
 import winsound as ws
 
 import PySimpleGUI as sg
 
-from parsing import parsing_dict
+from functions import show_structure
+from parsing import make_molecule_from_file, parsing_dict
 
 file_types = tuple(("Valid Types", "*." + key) for key in parsing_dict)
-
+rotamer_count = 1
 tasks = []
 
 # Entry cell width
@@ -39,9 +39,9 @@ left_col = sg.Col([
     [anchor_layout, center_layout, angle_layout],
     [sg.Listbox(values=tasks, key="rotations", auto_size_text=True, size=(160 // ew, 10), no_scrollbar=True,
                 select_mode="LISTBOX_SELECT_MODE_EXTENDED")],
-    [sg.T(f"Total Rotamers: {0}")],
+    [sg.Text(f"Total Rotamers: {rotamer_count}", key="rot_count", size=(22, 1), font="Arial 10")],
     [sg.Prog(max_value=1, size=(17, 1))],
-], s=(200, 300), element_justification="center", vertical_alignment="top")
+], element_justification="center", vertical_alignment="top")
 
 # Button size
 bsz = (8, 1)
@@ -61,7 +61,8 @@ right_col = sg.Col([
     [sg.HSep()],
     [sg.B("Perform Calculations", k="execute")],
 
-], s=(200, 300), element_justification="center", vertical_alignment="top")
+], element_justification="center", vertical_alignment="top")
+
 layout = [
     [sg.Titlebar('Rotapy')],
     [left_col, right_col],
@@ -85,13 +86,34 @@ while True:  # Event Loop
             a = int(values['anchor'])
             c = int(values['center'])
             d = float(values["angle"])
+
             tasks.append(f"{a}, {c}, {d}")
-            window.FindElement('rotations').Update(values=tasks)
-            window.FindElement('add_save').Update("Add")
+
+            # Calculate the number of rotations. Will always be an integer, hence floor_divide here
+            rotamer_count *= 360 // d
+
+            window['rotations'].update(values=tasks)
+
+            rot_string = str(f"Total Rotamers: {rotamer_count}")
+            window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
 
         elif event == "Delete":  # Remove an item from the rotation queue
+            v = values["rotations"][0].split(", ")
+
+            a = int(v[0])
+            c = int(v[1])
+            d = float(v[2])
+
+            tasks_remove = f"{a}, {c}, {d}"
             tasks.remove(values["rotations"][0])
-            window.FindElement('rotations').Update(values=tasks)
+
+            # Calculate the number of rotations. Will always be an integer, hence floor_divide here
+            rotamer_count /= 360 // d
+
+            window['rotations'].update(values=tasks)
+
+            rot_string = str(f"Total Rotamers: {rotamer_count}")
+            window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
 
         elif event == "show_plot":
             """Reads the current import file, and shows the structure in a non-blocking way"""
