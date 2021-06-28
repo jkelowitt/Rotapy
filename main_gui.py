@@ -99,7 +99,11 @@ while True:  # Event Loop
             rot_string = str(f"Total Rotamers: {rotamer_count}")
             window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
 
-        elif event == "Delete":  # Remove an item from the rotation queue
+            window['anchor'](value="")
+            window['center'](value="")
+            window['angle'](value="")
+
+        elif event == "Remove":  # Remove an item from the rotation queue
             v = values["rotations"][0].split(", ")
 
             a = int(v[0])
