@@ -85,9 +85,18 @@ while True:  # Event Loop
     try:
 
         if event == "add_save":  # Add an item to the rotation queue
-            a = int(values['anchor'])
-            c = int(values['center'])
-            d = float(values["angle"])
+            try:
+                # int(float()) because 1.5 cannot be turned into an int while it is still a string
+                a = int(float(values['anchor']))
+                c = int(float(values['center']))
+                d = float(values["angle"])
+            except ValueError:
+                sg.popup_error("Entries into the rotation queue must be numerical", title="Rotation Queue Error")
+                continue
+
+            if d > 360:
+                sg.popup_error("The angle must be less than 360°", title="Angle Error")
+                continue
 
             tasks.append(f"{a}, {c}, {d}")
 
