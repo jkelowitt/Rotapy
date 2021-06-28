@@ -53,7 +53,7 @@ right_col = sg.Col([
     [sg.HSep()],
     [sg.T("Rotation Queue")],
     [sg.B(button_text='Add', key="add_save", s=bsz, pad=bpad)],
-    [sg.B('Delete', s=bsz, pad=bpad)],
+    [sg.B('Remove', s=bsz, pad=bpad)],
     [sg.HSep()],
     [sg.T("Save Locations")],
     [sg.T("Com"), sg.I(k="com_dir", s=(10, 1)), sg.FolderBrowse(target="com_dir")],
