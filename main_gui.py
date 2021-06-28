@@ -140,6 +140,22 @@ while True:  # Event Loop
 
         elif event == "execute":
             """Performs all the rotations in the rotation queue"""
+
+            # Check that all the required values are present
+            if not (values["input_file"] and tasks):
+                sg.popup_error("Cannot perform calculations until both an item has been entered "
+                               "into the rotation queue, and an input molecule has been selected.",
+                               title="Exectution Error 1")
+                continue
+
+            elif not values["input_file"]:
+                sg.popup_error("Cannot perform calculations until input file is entered.", title="Execution Error 2")
+                continue
+
+            elif not tasks:
+                sg.popup_error("Cannot perform calculations at least one task is entered.", title="Execution Error 3")
+                continue
+
             run_calculations()
 
         elif event is None or event in ("Cancel", sg.WIN_CLOSED):
