@@ -69,7 +69,8 @@ layout = [
 ]
 
 
-def show_plot(e, v):
+def show_plot(v):
+    """Show a plot of the input file"""
     file = v["input_file"]
     molecule = make_molecule_from_file(file)
     show_structure(molecule, title=molecule.name)
@@ -136,7 +137,7 @@ while True:  # Event Loop
                 sg.popup_error("Cannot show plot until input file is entered.", title="Plotting Error")
                 continue
 
-            show_plot(event, values)
+            show_plot(values)
 
         elif event == "execute":
             """Performs all the rotations in the rotation queue"""
