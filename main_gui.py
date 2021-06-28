@@ -37,27 +37,27 @@ angle_layout = sg.Col([
 
 left_col = sg.Col([
     [anchor_layout, center_layout, angle_layout],
-    [sg.Listbox(values=tasks, key="rotations", auto_size_text=True, size=(160 // ew, 10), no_scrollbar=True,
-                select_mode="LISTBOX_SELECT_MODE_EXTENDED")],
+    [sg.Listbox(values=tasks, key="rotations", auto_size_text=True, size=(160 // ew, 12), no_scrollbar=True)],
     [sg.Text(f"Total Rotamers: {rotamer_count}", key="rot_count", size=(22, 1), font="Arial 10")],
     [sg.Prog(max_value=1, size=(17, 1))],
 ], element_justification="center", vertical_alignment="top")
 
 # Button size
-bsz = (8, 1)
+bsz = (17, 1)
 bpad = (1, 1)
 
 right_col = sg.Col([
     [sg.T("Import Molecule", )],
     [sg.I(k="input_file", s=(10, 1)), sg.FileBrowse(target="input_file", file_types=file_types)],
-    [sg.B(button_text="Show Molecule", k="show_plot", s=(17, 1), pad=bpad, )],
+    [sg.B(button_text="Show Molecule", k="show_plot", s=bsz, pad=bpad, )],
     [sg.HSep()],
     [sg.T("Rotation Queue")],
-    [sg.B(button_text='Add', key="add_save", s=bsz, pad=bpad), sg.B('Delete', s=bsz, pad=bpad)],
+    [sg.B(button_text='Add', key="add_save", s=bsz, pad=bpad)],
+    [sg.B('Delete', s=bsz, pad=bpad)],
     [sg.HSep()],
     [sg.T("Save Locations")],
     [sg.T("Com"), sg.I(k="com_dir", s=(10, 1)), sg.FolderBrowse(target="com_dir")],
-    [sg.T("Img  "), sg.I(k="img_dir", s=(10, 1)), sg.FolderBrowse(target="img_dir")],
+    [sg.T("Img"), sg.I(k="img_dir", s=(10, 1)), sg.FolderBrowse(target="img_dir")],
     [sg.HSep()],
     [sg.B("Perform Calculations", k="execute")],
 
