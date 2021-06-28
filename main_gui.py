@@ -132,7 +132,10 @@ while True:  # Event Loop
 
         elif event == "show_plot":
             """Reads the current import file, and shows the structure"""
-            ws.Beep(1000, 100)
+            if not values["input_file"]:
+                sg.popup_error("Cannot show plot until input file is entered.", title="Plotting Error")
+                continue
+
             show_plot(event, values)
 
         elif event == "execute":
