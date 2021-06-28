@@ -124,8 +124,6 @@ while True:  # Event Loop
 
         elif event == "execute":
             """Performs all the rotations in the rotation queue"""
-            sg.popup('Some rotamers were found to have errors. They are marked with "ERR" in their name.',
-                     title="Errors Found")
             run_calculations()
 
         elif event is None or event in ("Cancel", sg.WIN_CLOSED):
