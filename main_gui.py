@@ -4,9 +4,9 @@ This is a working file when transferring over to a gui based input format
 import winsound as ws
 from copy import deepcopy
 from math import ceil
+from time import sleep
 
 import PySimpleGUI as sg
-from tqdm import tqdm
 
 from classes import Atom
 from functions import (bonded_atom_search, center_on_atom, check_bonds, rotate_point_around_vector, save_structure,
@@ -18,7 +18,7 @@ settings = None
 # Directly modified variables
 file_types = tuple(("Valid Types", "*." + key) for key in parsing_dict)
 rotamer_count = 1
-tasks = ["7, 17, 1"]
+tasks = []
 
 # Entry cell width
 ew = 7
@@ -29,32 +29,28 @@ cToolTip = " When rotating an alcoholic hydrogen, this would be the oxygen. "
 angleToolTip = " When rotating an alcoholic hydrogen, this would be the size of the rotation steps. "
 
 
-def confirm_sound():
-    """Play confirmation sound"""
-    ws.Beep(1000, 100)
-
-
-def deny_sound():
-    """Play denial sound"""
-    ws.Beep(250, 100)
-
-
-def error_sound():
-    """Play denial sound"""
-    ws.MessageBeep()
-
-
-def parse_tasks(queue, file):
+def parse_tasks(tasks):
     """Parse the string based task menu, and convert it to a rotation queue"""
-    rotation_queue = []
-    base_compound = None
-
-    for item in queue:
-        # Get user input numbers
+    new_tasks = []
+    for item in tasks:
         items = item.split(", ")
         ancr_atom_num = int(float(items[0]))
         center_atom_num = int(float(items[1]))
         angle = float(items[2])
+        new_tasks.append([ancr_atom_num, center_atom_num, angle])
+
+    return new_tasks
+
+
+def make_queue_from_tasks(tasks, file):
+    """Make the rotation queue"""
+    rotation_queue = []
+    base_compound = None
+
+    for task in tasks:
+        ancr_atom_num = task[0]
+        center_atom_num = task[1]
+        angle = task[2]
 
         # Get all the angles from 0 degree rotation
         count = ceil((360 - angle) / angle)
@@ -92,15 +88,19 @@ def show_plot(v):
     show_structure(molecule, title=molecule.name)
 
 
-def generate_rotamers(base_compound, rotation_queue):
+def generate_rotamers(base_compound, rotation_queue, window):
     """Generate the rotamers and return the rotamers in Molecule form"""
+    # Grab the progress bar and update it as we go
+    window["p_text"]("Rotating")
+
+    # This is the starting position of the compound. Free from any rotations
     rotamers = [deepcopy(base_compound)]
 
     # Sort the rotation queue to increase calculation efficiency
     rotation_queue.sort(key=lambda x: len(x["rotatees"]), reverse=True)
 
     # Step through the rotation queue
-    for rotation in rotation_queue:
+    for i, rotation in enumerate(rotation_queue):
 
         # Counter holds the number of molecules to have rotamers made from.
         # This is done to prevent performing rotations twice on the same rotamer.
@@ -141,6 +141,10 @@ def generate_rotamers(base_compound, rotation_queue):
                 new_rotamer.name += f"_a{rotation['ancr']}c{rotation['center']}d{turn}"
                 new_rotamer.make_bond_graph()
                 rotamers.append(new_rotamer)
+
+        # Update Progress bar
+        window["pbar"].update_bar(i, rotamer_count)
+
     return rotamers
 
 
@@ -211,7 +215,7 @@ def settings_window(settings):
         if event == sg.WIN_CLOSED:
             break
         elif event == "save_settings":
-            confirm_sound()
+            sleep(0.1)
             settings["charge"] = values["charge"]
             settings["mul"] = values["mul"]
             settings["job"] = values["job"]
@@ -225,7 +229,6 @@ def settings_window(settings):
             break
 
         elif event == "reset":
-            deny_sound()
             window["charge"](default["charge"])
             window["mul"](default["mul"])
             window["job"](default["job"])
@@ -259,7 +262,7 @@ def make_main_window():
         [anchor_layout, center_layout, angle_layout],
         [sg.Listbox(values=tasks, key="rotations", auto_size_text=True, size=(160 // ew, 14), no_scrollbar=True)],
         [sg.Text(f"Total Rotamers: {rotamer_count}", key="rot_count", size=(22, 1), font="Arial 10")],
-        [sg.Prog(max_value=1, size=(17, 1))],
+        [sg.T("Progress Bar", k="p_text"), sg.Prog(max_value=1, size=(10, 10), k="pbar")],
     ], element_justification="center", vertical_alignment="top")
 
     # Button size
@@ -268,9 +271,9 @@ def make_main_window():
 
     right_col = sg.Col([
         [sg.T("Import Molecule", )],
-        [sg.I(k="input_file", s=(10, 1), default_text=r"F:\Coding Projects\Python\Rotapy\example data\terpineol4.log"),
-         sg.FileBrowse(target="input_file", file_types=file_types)],
-        [sg.B(button_text="Show Molecule", k="show_plot", s=bsz, pad=bpad, )],
+        [sg.I(k="input_file", s=(10, 1)),
+         sg.FileBrowse(target="input_file", file_types=file_types, k="input_browse")],
+        [sg.B(button_text="Show Molecule", k="show_plot", s=bsz, pad=bpad)],
         [sg.HSep()],
         [sg.T("Rotation Queue")],
         [sg.B(button_text='Add', key="add_save", s=bsz, pad=bpad)],
@@ -278,13 +281,11 @@ def make_main_window():
         [sg.HSep()],
         [sg.T("Output Settings")],
         [sg.T("Com Output"),
-         sg.I(k="com_dir", s=(10, 1), tooltip=" If you don't want to save the com files, leave this blank. ",
-              default_text=r"F:\Coding Projects\Python\Rotapy\example data\com_output"),
-         sg.FolderBrowse(target="com_dir")],
+         sg.I(k="com_dir", s=(10, 1), tooltip=" If you don't want to save the com files, leave this blank. "),
+         sg.FolderBrowse(target="com_dir", k="com_browse")],
         [sg.T("Img Output"),
-         sg.I(k="img_dir", s=(10, 1), tooltip=" If you don't want to save the images, leave this blank. ",
-              default_text=r"F:\Coding Projects\Python\Rotapy\example data\img_output"),
-         sg.FolderBrowse(target="img_dir")],
+         sg.I(k="img_dir", s=(10, 1), tooltip=" If you don't want to save the images, leave this blank. "),
+         sg.FolderBrowse(target="img_dir", k="img_browse")],
         [sg.B("Change Output Settings", k="change_settings")],
         [sg.HSep()],
         [sg.B("Perform Calculations", k="execute")],
@@ -295,15 +296,21 @@ def make_main_window():
         [sg.Titlebar('Rotapy')],
         [left_col, right_col],
     ]
-
-    return sg.Window('Rotapy', layout, keep_on_top=True)
+    return sg.Window('Rotapy', layout, keep_on_top=True, finalize=True)
 
 
 window = make_main_window()
-while True:
-    """"""
 
+# Initialize rotamer count
+for thing in parse_tasks(tasks):
+    rotamer_count *= 360 // thing[-1]
+window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
+
+while True:
+    # Wait till the user does something, then go into the condition loop
     event, values = window.Read()
+
+    # Main event loop
     if event == "add_save":  # Add an item to the rotation queue
         try:
             a = values['anchor']
@@ -311,7 +318,7 @@ while True:
             d = values["angle"]
 
             if a == "" or c == "" or d == "":
-                error_sound()
+                ws.MessageBeep()
                 sg.popup_error(
                     "One or more of the inputs is empty. Please enter a selection to all"
                     " input cells before adding to the rotation queue.",
@@ -326,20 +333,20 @@ while True:
             assert a != c
 
         except ValueError:
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("Entries into the rotation queue must be numerical", title="Rotation Queue Error",
                            keep_on_top=True)
             continue
 
         except AssertionError:
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("The anchor atom and the center atom must not be the same atom",
                            title="Anchor Center Error", keep_on_top=True)
             continue
 
-        if d > 360:
-            error_sound()
-            sg.popup_error("The angle must be less than 360°", title="Angle Error", keep_on_top=True)
+        if d > 360 or d < 0:
+            ws.MessageBeep()
+            sg.popup_error("The angle must be >0° and <360°", title="Angle Error", keep_on_top=True)
             continue
 
         tasks.append(f"{a}, {c}, {d}")
@@ -351,7 +358,6 @@ while True:
         window['rotations'].update(values=tasks)
 
         # Update rotation count
-        rot_string = str(f"Total Rotamers: {rotamer_count}")
         window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
 
         # Clear inputs
@@ -363,7 +369,7 @@ while True:
         try:
             v = values["rotations"][0].split(", ")
         except IndexError:
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("Click on one of the items in the rotation queue in order to remove it.",
                            title="Remove Error", keep_on_top=True)
             continue
@@ -380,13 +386,12 @@ while True:
 
         window['rotations'].update(values=tasks)
 
-        rot_string = str(f"Total Rotamers: {rotamer_count}")
         window['rot_count']("Total Rotamers: {}".format(int(rotamer_count)))
 
     elif event == "show_plot":
         """Reads the current import file, and shows the structure"""
         if not values["input_file"]:
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("Cannot show plot until input file is entered.", title="Plotting Error", keep_on_top=True)
             continue
 
@@ -397,28 +402,29 @@ while True:
 
         # Check that all the required values are present
         if not (values["input_file"] and tasks):
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("Cannot perform calculations until both an item has been entered "
                            "into the rotation queue, and an input molecule has been selected.",
                            title="Exectution Error (1)", keep_on_top=True)
             continue
 
         elif not values["input_file"]:
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("Cannot perform calculations until input file is entered.", title="Execution Error (2)",
                            keep_on_top=True)
             continue
 
         elif not tasks:
-            error_sound()
+            ws.MessageBeep()
             sg.popup_error("Cannot perform calculations at least one task is entered.", title="Execution Error (3)",
                            keep_on_top=True)
             continue
 
         # If all goes well, perform the calculations
         file = values["input_file"]
-        rotation_queue, base_compound = parse_tasks(tasks, file)
-        rotamers = generate_rotamers(base_compound, rotation_queue)
+        formatted_tasks = parse_tasks(tasks)
+        rotation_queue, base_compound = make_queue_from_tasks(formatted_tasks, file)
+        rotamers = generate_rotamers(base_compound, rotation_queue, window)
 
         if settings is None:
             settings = {
@@ -435,15 +441,19 @@ while True:
 
         # Set the naming scheme to sequential if requested
         if settings["seq"]:
+            window["p_text"]("Renaming Files")
             for i, rotamer in enumerate(rotamers):
                 rotamer.name = f"{base_compound.name}_{i + 1}"
+                window["pbar"].update_bar(i, rotamer_count)
 
         # Check for errors in the bonding
         errored_out = 0
-        for rotamer in rotamers:
+        window["p_text"]("Checking ERR")
+        for i, rotamer in enumerate(rotamers):
             if count := check_bonds(base_compound, rotamer):
                 rotamer.name += f"_{count}ERR"
                 errored_out += 1
+            window["pbar"].update_bar(i, rotamer_count)
 
         # Alert the user to the presence of bad rotamers
         e_msg = f"{errored_out} rotamers had collisions while rotating. " \
@@ -456,12 +466,24 @@ while True:
             sg.popup_error(e_msg, title="Collisions Detected", keep_on_top=True, non_blocking=True)
 
         if output := values["com_dir"]:
-            for molecule in tqdm(rotamers, desc="Saving com files", dynamic_ncols=True):
+            window["p_text"]("Writing COM")
+            for i, molecule in enumerate(rotamers):
                 write_job_to_com(molecule, title=molecule.name, directory=output, **settings)
+                window["pbar"].update_bar(i)
 
         if output := values["img_dir"]:
-            for rotamer in tqdm(rotamers, desc="Saving img files", dynamic_ncols=True):
-                save_structure(rotamer, directory=output)
+            window["p_text"]("Writing IMG")
+            for i, molecule in enumerate(rotamers):
+                save_structure(molecule, directory=output)
+                window["pbar"].update_bar(i)
+
+        # Reset progress bar
+        window["p_text"]("Progress Bar")
+        window["pbar"].update_bar(0, rotamer_count)
+
+        # Alert the user to the completion of the calculation
+        ws.MessageBeep()
+        sg.popup("Calculations Complete", keep_on_top=True)
 
     elif event == "change_settings":
         if x := settings_window(settings):
