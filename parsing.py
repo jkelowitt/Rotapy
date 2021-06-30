@@ -20,7 +20,7 @@ write_job_to_com: Takes in a list of atoms and their cartesian coordinates such 
 import re
 
 from classes import Atom, Molecule
-from functions import center_on_atom, make_output_folder
+from functions import center_on_atom
 
 
 def yes_no(prompt: str) -> bool:
@@ -282,7 +282,7 @@ def write_job_to_com(
         cores: int = 8,
         memory: str = "20gb",
         linda: int = 1,
-        output: str = "",
+        directory: str = "",
         **kwargs) -> None:
     """
     Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
@@ -310,7 +310,7 @@ def write_job_to_com(
 
     linda: How many linda cores to use (set to 1 even if not being used)
 
-    output: The output directory for the file
+    directory: The output directory for the file
 
     **kwargs: Is not used, it is just used to catch any extra kwargs that may get passed in.
     """
@@ -334,8 +334,6 @@ def write_job_to_com(
         d += f"{name} {x} {y} {z}\n"
     d += "\n"  # Two empty rows are required
 
-    directory = make_output_folder(output)
-
     with open(fr"{directory}\{title}.com", "w+") as file:
         file.write(d)
 
@@ -343,7 +341,11 @@ def write_job_to_com(
 def make_molecule_from_file(file):
     """Given a file, return a Molecule object with the molecule contained in the file"""
     xyz = parsing_dict[file[file.index(".") + 1:]](file)
-    name = file.split("/")[-1]
+    if "/" in file:
+        name = file.split("/")[-1]
+    else:
+        name = file.split("\\")[-1]
+
     name = name[:name.index(".")]
     atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in xyz]
     molecule = Molecule(name, atoms)

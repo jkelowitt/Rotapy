@@ -118,12 +118,12 @@ def show_structure(mo, title: str = None):
     plt.close('all')
 
 
-def save_structure(mo, title: str = None, output: str = ""):
+def save_structure(mo, title: str = None, directory: str = ""):
     """Save the structure of a molecule to a png file"""
     matplotlib.use('agg')
 
     fig, ax = generate_figure(mo)
-    directory = f"{make_output_folder(output)}/{title if title else mo.name}.png"
+    directory = f"{directory}/{title if title else mo.name}.png"
 
     plt.title(title if title else mo.name, fontsize=5)
     plt.savefig(directory)
