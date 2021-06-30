@@ -2,37 +2,31 @@
 This is a working file when transferring over to a gui based input format
 """
 import winsound as ws
+from copy import deepcopy
 from math import ceil
 
 import PySimpleGUI as sg
+from tqdm import tqdm
 
 from classes import Atom
-from functions import bonded_atom_search, center_on_atom, rotate_point_around_vector, show_structure
-from parsing import make_molecule_from_file, parsing_dict
+from functions import (bonded_atom_search, center_on_atom, check_bonds, rotate_point_around_vector, save_structure,
+                       show_structure)
+from parsing import make_molecule_from_file, parsing_dict, write_job_to_com
 
-settings = {
-    "charge": "0",
-    "mul": "1",
-    "job": "Opt Freq",
-    "theory": "B3LYP",
-    "basis": "6-311G(2df,2p)",
-    "cores": "8",
-    "memory": "20gb",
-    "linda": "1",
-}
+settings = None
 
 # Directly modified variables
 file_types = tuple(("Valid Types", "*." + key) for key in parsing_dict)
 rotamer_count = 1
-tasks = []
+tasks = ["7, 17, 1"]
 
 # Entry cell width
 ew = 7
 
 choice_buttons = []
-aToolTip = "When rotating an alcoholic hydrogen, this would be the carbon."
-cToolTip = "When rotating an alcoholic hydrogen, this would be the oxygen."
-angleToolTip = "When rotating an alcoholic hydrogen, this would be the hydrogen."
+aToolTip = " When rotating an alcoholic hydrogen, this would be the carbon. "
+cToolTip = " When rotating an alcoholic hydrogen, this would be the oxygen. "
+angleToolTip = " When rotating an alcoholic hydrogen, this would be the size of the rotation steps. "
 
 
 def confirm_sound():
@@ -100,7 +94,7 @@ def show_plot(v):
 
 def generate_rotamers(base_compound, rotation_queue):
     """Generate the rotamers and return the rotamers in Molecule form"""
-    rotamers = [base_compound]
+    rotamers = [deepcopy(base_compound)]
 
     # Sort the rotation queue to increase calculation efficiency
     rotation_queue.sort(key=lambda x: len(x["rotatees"]), reverse=True)
@@ -161,17 +155,24 @@ def settings_window(settings):
         "cores": "8",
         "memory": "20gb",
         "linda": "1",
+        "seq": True
     }
 
+    if settings is None:
+        settings = default.copy()
+
+    input_width = 20
+    input_height = 10
+
     settings_right = sg.Col(
-        [[sg.I(settings["charge"], k="charge")],
-         [sg.I(settings["mul"], k="mul")],
-         [sg.I(settings["job"], k="job")],
-         [sg.I(settings["theory"], k="theory")],
-         [sg.I(settings["basis"], k="basis")],
-         [sg.I(settings["cores"], k="cores")],
-         [sg.I(settings["memory"], k="memory")],
-         [sg.I(settings["linda"], k="linda")],
+        [[sg.I(settings["charge"], k="charge", s=(input_width, input_height))],
+         [sg.I(settings["mul"], k="mul", s=(input_width, input_height))],
+         [sg.I(settings["job"], k="job", s=(input_width, input_height))],
+         [sg.I(settings["theory"], k="theory", s=(input_width, input_height))],
+         [sg.I(settings["basis"], k="basis", s=(input_width, input_height))],
+         [sg.I(settings["cores"], k="cores", s=(input_width, input_height))],
+         [sg.I(settings["memory"], k="memory", s=(input_width, input_height))],
+         [sg.I(settings["linda"], k="linda", s=(input_width, input_height))],
          ])
 
     settings_left = sg.Col([
@@ -185,13 +186,25 @@ def settings_window(settings):
         [sg.T("linda", k="tl")],
     ])
 
+    file_settings = sg.Col([
+        [sg.CB("Sequentially Name Files", k="seq", default=settings["seq"])],
+        [],
+        [],
+        [],
+        [],
+    ])
+
     settings_layout = [
         [sg.Titlebar('Rotapy')],
-        [sg.T("Output Settings:")],
+        [sg.T("Job Settings:")],
         [settings_left, settings_right],
+        [sg.HSep()],
+        [sg.T("File Settings:")],
+        [file_settings],
+        [sg.HSep()],
         [sg.B("Save", k="save_settings"), sg.B("Reset to Default", k="reset")]
     ]
-    window = sg.Window("Output Settings", settings_layout)
+    window = sg.Window("Output Settings", settings_layout, keep_on_top=True)
 
     while True:
         event, values = window.read()
@@ -207,6 +220,7 @@ def settings_window(settings):
             settings["cores"] = values["cores"]
             settings["memory"] = values["memory"]
             settings["linda"] = values["linda"]
+            settings["seq"] = values["seq"]
 
             break
 
@@ -220,6 +234,7 @@ def settings_window(settings):
             window["cores"](default["cores"])
             window["memory"](default["memory"])
             window["linda"](default["linda"])
+            window["seq"](default["seq"])
 
     window.close()
     return settings
@@ -253,7 +268,8 @@ def make_main_window():
 
     right_col = sg.Col([
         [sg.T("Import Molecule", )],
-        [sg.I(k="input_file", s=(10, 1)), sg.FileBrowse(target="input_file", file_types=file_types)],
+        [sg.I(k="input_file", s=(10, 1), default_text=r"F:\Coding Projects\Python\Rotapy\example data\terpineol4.log"),
+         sg.FileBrowse(target="input_file", file_types=file_types)],
         [sg.B(button_text="Show Molecule", k="show_plot", s=bsz, pad=bpad, )],
         [sg.HSep()],
         [sg.T("Rotation Queue")],
@@ -261,8 +277,14 @@ def make_main_window():
         [sg.B('Remove', s=bsz, pad=bpad)],
         [sg.HSep()],
         [sg.T("Output Settings")],
-        [sg.T("Com Output"), sg.I(k="com_dir", s=(10, 1)), sg.FolderBrowse(target="com_dir")],
-        [sg.T("Img Output"), sg.I(k="img_dir", s=(10, 1)), sg.FolderBrowse(target="img_dir")],
+        [sg.T("Com Output"),
+         sg.I(k="com_dir", s=(10, 1), tooltip=" If you don't want to save the com files, leave this blank. ",
+              default_text=r"F:\Coding Projects\Python\Rotapy\example data\com_output"),
+         sg.FolderBrowse(target="com_dir")],
+        [sg.T("Img Output"),
+         sg.I(k="img_dir", s=(10, 1), tooltip=" If you don't want to save the images, leave this blank. ",
+              default_text=r"F:\Coding Projects\Python\Rotapy\example data\img_output"),
+         sg.FolderBrowse(target="img_dir")],
         [sg.B("Change Output Settings", k="change_settings")],
         [sg.HSep()],
         [sg.B("Perform Calculations", k="execute")],
@@ -274,7 +296,7 @@ def make_main_window():
         [left_col, right_col],
     ]
 
-    return sg.Window('Rotapy', layout)
+    return sg.Window('Rotapy', layout, keep_on_top=True)
 
 
 window = make_main_window()
@@ -293,7 +315,7 @@ while True:
                 sg.popup_error(
                     "One or more of the inputs is empty. Please enter a selection to all"
                     " input cells before adding to the rotation queue.",
-                    title="Empty Cell Error")
+                    title="Empty Cell Error", keep_on_top=True)
                 continue
 
             # int(float()) because 1.5 cannot be turned into an int while it is still a string
@@ -305,18 +327,19 @@ while True:
 
         except ValueError:
             error_sound()
-            sg.popup_error("Entries into the rotation queue must be numerical", title="Rotation Queue Error")
+            sg.popup_error("Entries into the rotation queue must be numerical", title="Rotation Queue Error",
+                           keep_on_top=True)
             continue
 
         except AssertionError:
             error_sound()
             sg.popup_error("The anchor atom and the center atom must not be the same atom",
-                           title="Anchor Center Error")
+                           title="Anchor Center Error", keep_on_top=True)
             continue
 
         if d > 360:
             error_sound()
-            sg.popup_error("The angle must be less than 360°", title="Angle Error")
+            sg.popup_error("The angle must be less than 360°", title="Angle Error", keep_on_top=True)
             continue
 
         tasks.append(f"{a}, {c}, {d}")
@@ -342,7 +365,7 @@ while True:
         except IndexError:
             error_sound()
             sg.popup_error("Click on one of the items in the rotation queue in order to remove it.",
-                           title="Remove Error")
+                           title="Remove Error", keep_on_top=True)
             continue
 
         a = int(v[0])
@@ -364,7 +387,7 @@ while True:
         """Reads the current import file, and shows the structure"""
         if not values["input_file"]:
             error_sound()
-            sg.popup_error("Cannot show plot until input file is entered.", title="Plotting Error")
+            sg.popup_error("Cannot show plot until input file is entered.", title="Plotting Error", keep_on_top=True)
             continue
 
         show_plot(values)
@@ -377,17 +400,19 @@ while True:
             error_sound()
             sg.popup_error("Cannot perform calculations until both an item has been entered "
                            "into the rotation queue, and an input molecule has been selected.",
-                           title="Exectution Error (1)")
+                           title="Exectution Error (1)", keep_on_top=True)
             continue
 
         elif not values["input_file"]:
             error_sound()
-            sg.popup_error("Cannot perform calculations until input file is entered.", title="Execution Error (2)")
+            sg.popup_error("Cannot perform calculations until input file is entered.", title="Execution Error (2)",
+                           keep_on_top=True)
             continue
 
         elif not tasks:
             error_sound()
-            sg.popup_error("Cannot perform calculations at least one task is entered.", title="Execution Error (3)")
+            sg.popup_error("Cannot perform calculations at least one task is entered.", title="Execution Error (3)",
+                           keep_on_top=True)
             continue
 
         # If all goes well, perform the calculations
@@ -395,18 +420,52 @@ while True:
         rotation_queue, base_compound = parse_tasks(tasks, file)
         rotamers = generate_rotamers(base_compound, rotation_queue)
 
-        for a in rotamers:
-            print(a.atoms)
+        if settings is None:
+            settings = {
+                "charge": "0",
+                "mul": "1",
+                "job": "Opt Freq",
+                "theory": "B3LYP",
+                "basis": "6-311G(2df,2p)",
+                "cores": "8",
+                "memory": "20gb",
+                "linda": "1",
+                "seq": True
+            }
 
-        #
-        # Rename the molecules sequentially if requested
-        # Check for collisions
-        # Alert the user to the presence off bad rotamers
-        # Perform file saving
-        # Perform image saving
-        #
+        # Set the naming scheme to sequential if requested
+        if settings["seq"]:
+            for i, rotamer in enumerate(rotamers):
+                rotamer.name = f"{base_compound.name}_{i + 1}"
+
+        # Check for errors in the bonding
+        errored_out = 0
+        for rotamer in rotamers:
+            if count := check_bonds(base_compound, rotamer):
+                rotamer.name += f"_{count}ERR"
+                errored_out += 1
+
+        # Alert the user to the presence of bad rotamers
+        e_msg = f"{errored_out} rotamers had collisions while rotating. " \
+                f"The files were marked with '_#ERR', where ## is " \
+                f"the number of bonds different from the normal compound."
+
+        if errored_out:
+            # non_blocking is used so that this error message doesn't
+            # prevent calculations from continuing when being run unattended.
+            sg.popup_error(e_msg, title="Collisions Detected", keep_on_top=True, non_blocking=True)
+
+        if output := values["com_dir"]:
+            for molecule in tqdm(rotamers, desc="Saving com files", dynamic_ncols=True):
+                write_job_to_com(molecule, title=molecule.name, directory=output, **settings)
+
+        if output := values["img_dir"]:
+            for rotamer in tqdm(rotamers, desc="Saving img files", dynamic_ncols=True):
+                save_structure(rotamer, directory=output)
+
     elif event == "change_settings":
-        settings = settings_window(settings)
+        if x := settings_window(settings):
+            settings = x.copy()
 
     elif event is None or event in ("Cancel", sg.WIN_CLOSED):
         break
