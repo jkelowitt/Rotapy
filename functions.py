@@ -18,12 +18,14 @@ verified_input: Verify that the user has input a value which can be converted to
 
 """
 
+from os import getcwd, makedirs, path
+
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pyquaternion as pq
 
 from classes import Atom, Molecule
-from parsing import make_output_folder
 
 
 def generate_figure(mo: Molecule):
@@ -116,12 +118,12 @@ def show_structure(mo, title: str = None):
     plt.close('all')
 
 
-def save_structure(mo, title: str = None, output: str = ""):
+def save_structure(mo, title: str = None, directory: str = ""):
     """Save the structure of a molecule to a png file"""
     matplotlib.use('agg')
 
     fig, ax = generate_figure(mo)
-    directory = f"{make_output_folder(output)}/{title if title else mo.name}.png"
+    directory = f"{directory}/{title if title else mo.name}.png"
 
     plt.title(title if title else mo.name, fontsize=5)
     plt.savefig(directory)
@@ -246,3 +248,71 @@ def verified_input(prompt: str = "", verify: type = int):
             print(f"Error: Must be of type {verify.__name__}")
 
     return data
+
+
+def check_bonds(m1, m2):
+    """Checks whether the two molecules have the same bonding structure
+    If the bond count lists are not exactly equal, a collision occurred
+    Only a very complex scenario would really defeat this detection method.
+    A complex problem == complex solution, thus, I procrastinate.
+    """
+    # Update bond graphs
+    m1.make_bond_graph()
+    m2.make_bond_graph()
+
+    # Makes a list of the bond counts for each atom
+    m1struct = [len(m1.bonds[b]) for b in m1.bonds]
+    m2struct = [len(m2.bonds[b]) for b in m2.bonds]
+
+    m1struct.sort()
+    m2struct.sort()
+
+    bond_diff = abs(sum(m1struct) - sum(m2struct))
+    return bond_diff
+
+
+def randomly_orient(mo):
+    """Randomly orient a given molecule in 3d space using uniform distributions"""
+    mo = center_on_atom(mo, 0)
+    new_mo = Molecule(name=mo.name, atoms=list())
+
+    center_on_atom(mo, 0)
+
+    rand_axis = tuple(np.random.uniform(size=(3,)))
+    rand_deg = np.random.uniform() * 360
+
+    for atom in mo.atoms:
+        new_atom_pos = rotate_point_around_vector(point=atom.pos, vector=rand_axis, deg=rand_deg)
+        new_atom = Atom(atom.name, new_atom_pos)
+        new_mo.add_atom(new_atom)
+
+    return new_mo
+
+
+def make_output_folder(sub: str = "") -> str:
+    """
+    Makes a directory in the script location to output the downloaded files
+
+    Parameters
+    ----------
+    sub: The name of the directory to be made.
+
+    Returns
+    -------
+    dir_path: The directory pointing to :sub:
+
+    """
+    # Finds the current directory
+    dir_path = getcwd()
+
+    # Makes the path for the new folder
+    dir_path = dir_path + fr"\{sub}"
+
+    # If the folder doesn't exist, make it.
+    if not path.exists(dir_path):
+        try:
+            makedirs(dir_path)
+        except FileExistsError:
+            # Sometimes this error pops when using threading or multiprocessing.
+            pass
+    return dir_path

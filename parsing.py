@@ -18,7 +18,9 @@ write_job_to_com: Takes in a list of atoms and their cartesian coordinates such 
                   and saves the coordinates to a .com file.
 """
 import re
-from os import path, makedirs, getcwd
+
+from classes import Atom, Molecule
+from functions import center_on_atom
 
 
 def yes_no(prompt: str) -> bool:
@@ -136,35 +138,6 @@ def change_dict_values(choices: dict, prompt: str = "\nSelect one of the followi
     print(f"'{selection}' has been set to '{new_value}'")
 
     return choices, False
-
-
-def make_output_folder(sub: str = "") -> str:
-    """
-    Makes a directory in the script location to output the downloaded files
-
-    Parameters
-    ----------
-    sub: The name of the directory to be made.
-
-    Returns
-    -------
-    dir_path: The directory pointing to :sub:
-
-    """
-    # Finds the current directory
-    dir_path = getcwd()
-
-    # Makes the path for the new folder
-    dir_path = dir_path + fr"\{sub}"
-
-    # If the folder doesn't exist, make it.
-    if not path.exists(dir_path):
-        try:
-            makedirs(dir_path)
-        except FileExistsError:
-            # Sometimes this error pops when using threading or multiprocessing.
-            pass
-    return dir_path
 
 
 def parse_geom_from_log(file: str) -> list:
@@ -299,7 +272,7 @@ def parse_geom_from_com(file: str) -> list:
 
 
 def write_job_to_com(
-        atoms: list,
+        mo: Molecule,
         title: str = "molecule_name",
         charge: int = 0,
         mul: float = 1,
@@ -309,7 +282,7 @@ def write_job_to_com(
         cores: int = 8,
         memory: str = "20gb",
         linda: int = 1,
-        output: str = "",
+        directory: str = "",
         **kwargs) -> None:
     """
     Takes in a list of atoms and their cartesian coordinates such as in parse_opt_geom_from_log,
@@ -317,7 +290,7 @@ def write_job_to_com(
 
     Parameters
     ----------
-    atoms: The atoms to be written
+    mo: The molecule to be written
 
     title: The title for the file
 
@@ -337,7 +310,7 @@ def write_job_to_com(
 
     linda: How many linda cores to use (set to 1 even if not being used)
 
-    output: The output directory for the file
+    directory: The output directory for the file
 
     **kwargs: Is not used, it is just used to catch any extra kwargs that may get passed in.
     """
@@ -353,7 +326,7 @@ def write_job_to_com(
 
 {charge} {mul}
 """
-    for a in atoms:
+    for a in mo.atoms:
         name = str(a.name)
         x = str(a.pos[0])[:14].rjust(15)
         y = str(a.pos[1])[:14].rjust(15)
@@ -361,7 +334,27 @@ def write_job_to_com(
         d += f"{name} {x} {y} {z}\n"
     d += "\n"  # Two empty rows are required
 
-    directory = make_output_folder(output)
-
     with open(fr"{directory}\{title}.com", "w+") as file:
         file.write(d)
+
+
+def make_molecule_from_file(file):
+    """Given a file, return a Molecule object with the molecule contained in the file"""
+    xyz = parsing_dict[file[file.index(".") + 1:]](file)
+    if "/" in file:
+        name = file.split("/")[-1]
+    else:
+        name = file.split("\\")[-1]
+
+    name = name[:name.index(".")]
+    atoms = [Atom(a[0], (a[1], a[2], a[3])) for a in xyz]
+    molecule = Molecule(name, atoms)
+    molecule = center_on_atom(molecule, 0)
+    return molecule
+
+
+parsing_dict = {
+    "log": parse_geom_from_log,
+    "xyz": parse_geom_from_xyz,
+    "com": parse_geom_from_com
+}
