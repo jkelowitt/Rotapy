@@ -3,7 +3,7 @@
 @Start Date: May 14, 2021
 @Contact: jkelowitt@protonmail.com
 @Site: github.com/jkelowitt/Rotapy
-@Version: v2.0
+@Version: v2.1
 
 The end goal of this script is to be able to take in a Gaussian09 .log file,
 and allow the user to rotate specific elements of the contained molecule, and
@@ -58,7 +58,7 @@ def parse_tasks(tasks):
 
 
 def make_queue_from_tasks(tasks, file):
-    """Make the rotation queue"""
+    """Convert the task queue to the rotation queue"""
     rotation_queue = []
     base_compound = None
 
@@ -164,7 +164,9 @@ def generate_rotamers(base_compound, rotation_queue, window):
 
 
 def settings_window(settings):
-    """Open the settings window"""
+    """Open the settings window, and allow the user to specify settings"""
+
+    # Default settings are used if the user doesn't change anything, or resets to default
     default = {
         "charge": "0",
         "mul": "1",
@@ -177,12 +179,14 @@ def settings_window(settings):
         "seq": True
     }
 
+    # If the user hasn't changed the settings before, use the default
     if settings is None:
         settings = default.copy()
 
     input_width = 20
     input_height = 10
 
+    # Structure of right column of the settings window. Contains input boxes.
     settings_right = sg.Col(
         [[sg.I(settings["charge"], k="charge", s=(input_width, input_height))],
          [sg.I(settings["mul"], k="mul", s=(input_width, input_height))],
@@ -194,6 +198,7 @@ def settings_window(settings):
          [sg.I(settings["linda"], k="linda", s=(input_width, input_height))],
          ])
 
+    # Structure of the left column of the settings window. Contains uneditable text.
     settings_left = sg.Col([
         [sg.T("charge", k="tch")],
         [sg.T("mul", k="tm")],
@@ -205,14 +210,12 @@ def settings_window(settings):
         [sg.T("linda", k="tl")],
     ])
 
+    # Additional settings in the form of checkboxes.
     file_settings = sg.Col([
         [sg.CB("Sequentially Name Files", k="seq", default=settings["seq"])],
-        [],
-        [],
-        [],
-        [],
     ])
 
+    # Final format of the settings window
     settings_layout = [
         [sg.Titlebar('Rotapy')],
         [sg.T("Job Settings:")],
@@ -223,8 +226,10 @@ def settings_window(settings):
         [sg.HSep()],
         [sg.B("Save", k="save_settings"), sg.B("Reset to Default", k="reset")]
     ]
+
     window = sg.Window("Output Settings", settings_layout, keep_on_top=True)
 
+    # Settings window event loop
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -241,6 +246,7 @@ def settings_window(settings):
             settings["linda"] = values["linda"]
             settings["seq"] = values["seq"]
 
+            # If the user saves the settings, close the settings window.
             break
 
         elif event == "reset":
@@ -259,8 +265,12 @@ def settings_window(settings):
 
 
 def make_main_window():
-    """Data entry cells and titles. Pulled out so that the titles can be centered on the cell"""
+    """Returns the formatted main window object"""
+
+    # Data entry padding
     dep = (0, 0)
+
+    # Data entry layouts
     anchor_layout = sg.Col([
         [sg.T("Anchor", tooltip=aToolTip)], [sg.In(s=(ew, 1), k="anchor", tooltip=aToolTip)]
     ], pad=dep, element_justification="center", vertical_alignment="top")
@@ -273,6 +283,8 @@ def make_main_window():
         [sg.T("Angle", tooltip=angleToolTip)], [sg.In(s=(ew, 1), k="angle", tooltip=angleToolTip)]
     ], pad=dep, element_justification="center", vertical_alignment="top")
 
+    # Left column of the window layout.
+    # Contains the data entry cells, the total rotamer count, task queue, and progress bar
     left_col = sg.Col([
         [anchor_layout, center_layout, angle_layout],
         [sg.Listbox(values=tasks, key="rotations", auto_size_text=True, size=(160 // ew, 14), no_scrollbar=True)],
@@ -284,6 +296,8 @@ def make_main_window():
     bsz = (17, 1)
     bpad = (1, 1)
 
+    # Right column of the main window
+    # Contains all the file browser buttons, settings pop-up button, and execution button
     right_col = sg.Col([
         [sg.T("Import Molecule", )],
         [sg.I(k="input_file", s=(10, 1)),
@@ -307,10 +321,12 @@ def make_main_window():
 
     ], element_justification="center", vertical_alignment="top")
 
+    # Final layout of the main window
     layout = [
         [sg.Titlebar('Rotapy')],
         [left_col, right_col],
     ]
+
     return sg.Window('Rotapy', layout, keep_on_top=True, finalize=True)
 
 
@@ -380,7 +396,8 @@ while True:
         window['center'](value="")
         window['angle'](value="")
 
-    elif event == "Remove":  # Remove an item from the rotation queue
+    elif event == "Remove":
+        # Remove an item from the rotation queue
         try:
             v = values["rotations"][0].split(", ")
         except IndexError:
@@ -441,6 +458,8 @@ while True:
         rotation_queue, base_compound = make_queue_from_tasks(formatted_tasks, file)
         rotamers = generate_rotamers(base_compound, rotation_queue, window)
 
+        # If the user doesn't change the settings, use these instead.
+        # TODO this is a duplicate of the default in the settings_window function.
         if settings is None:
             settings = {
                 "charge": "0",
