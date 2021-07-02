@@ -507,9 +507,9 @@ while True:
 
         if output := values["img_dir"]:
             window["p_text"]("Writing IMG")
-            for i, molecule in enumerate(rotamers):
-                save_structure(molecule, directory=output)
-                window["pbar"].update_bar(i)
+            for i, rotamer in enumerate(rotamers):
+                save_structure(rotamer, output)
+                window["pbar"].update(i)
 
         # Reset progress bar
         window["p_text"]("Progress Bar")
