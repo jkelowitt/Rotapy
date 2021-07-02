@@ -3,7 +3,6 @@
 @Start Date: May 14, 2021
 @Contact: jkelowitt@protonmail.com
 @Site: github.com/jkelowitt/Rotapy
-@Version: v2.1
 
 The end goal of this script is to be able to take in a Gaussian09 .log file,
 and allow the user to rotate specific elements of the contained molecule, and
@@ -29,6 +28,7 @@ from functions import (bonded_atom_search, center_on_atom, check_bonds, rotate_p
                        show_structure)
 from parsing import make_molecule_from_file, parsing_dict, write_job_to_com
 
+version = 2.1
 settings = None
 
 # Directly modified variables
@@ -220,7 +220,7 @@ def settings_window(settings):
 
     # Final format of the settings window
     settings_layout = [
-        [sg.Titlebar('Rotapy')],
+        [sg.Titlebar(f'Rotapy v{version}')],
         [sg.T("Job Settings:")],
         [settings_left, settings_right],
         [sg.HSep()],
@@ -326,7 +326,7 @@ def make_main_window():
 
     # Final layout of the main window
     layout = [
-        [sg.Titlebar('Rotapy')],
+        [sg.Titlebar(f'Rotapy v{version}')],
         [left_col, right_col],
     ]
 
