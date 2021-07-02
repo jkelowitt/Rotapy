@@ -504,11 +504,8 @@ while True:
         if output := values["com_dir"]:
             window["p_text"]("Writing COM")
             for i, molecule in enumerate(rotamers):
-                kw = {
-                    "title": molecule.name,
-                    "directory": output,
-                }
-                kw.update(settings)
+                kw = {"title": molecule.name, "directory": output}
+                kw.update(settings)  # Add the settings to the kwarg dictionary
 
                 # Using threads results in a massive speed increase, for little to no work.
                 Thread(target=write_job_to_com, args=(molecule,), kwargs=kw, daemon=True).start()
