@@ -16,9 +16,9 @@ Main Changes remaining:
 
 """
 import winsound as ws
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from math import ceil
-from threading import Thread
 from time import sleep
 
 import PySimpleGUI as sg
@@ -504,13 +504,18 @@ while True:
 
         if output := values["com_dir"]:
             window["p_text"]("Writing COM")
-            for i, molecule in enumerate(rotamers):
-                kw = {"title": molecule.name, "directory": output}
-                kw.update(settings)  # Add the settings to the kwarg dictionary
 
-                # Using threads results in a massive speed increase, for little to no work.
-                Thread(target=write_job_to_com, args=(molecule,), kwargs=kw, daemon=True).start()
-                window["pbar"].update_bar(i)
+            futures = []
+
+            with ThreadPoolExecutor() as ex:
+                for molecule in rotamers:
+                    kw = {"title": molecule.name, "directory": output}
+                    kw.update(settings)  # Add the settings to the kwarg dictionary
+                    futures.append(ex.submit(write_job_to_com, molecule, **kw))
+
+                for i, future in enumerate(as_completed(futures)):
+                    _ = future
+                    window["pbar"].update(i)
 
         if output := values["img_dir"]:
             window["p_text"]("Writing IMG")
