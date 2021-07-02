@@ -117,7 +117,7 @@ def generate_rotamers(base_compound, rotation_queue, window):
     rotation_queue.sort(key=lambda x: len(x["rotatees"]), reverse=True)
 
     # Step through the rotation queue
-    for i, rotation in enumerate(rotation_queue):
+    for rotation in rotation_queue:
 
         # Counter holds the number of molecules to have rotamers made from.
         # This is done to prevent performing rotations twice on the same rotamer.
@@ -159,8 +159,9 @@ def generate_rotamers(base_compound, rotation_queue, window):
                 new_rotamer.make_bond_graph()
                 rotamers.append(new_rotamer)
 
-        # Update Progress bar
-        window["pbar"].update_bar(i, rotamer_count)
+                # Update Progress bar
+                pbar_count = len(rotamers)
+                window["pbar"].update_bar(pbar_count)
 
     return rotamers
 
