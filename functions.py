@@ -267,7 +267,7 @@ def check_bonds(m1, m2):
     m1struct.sort()
     m2struct.sort()
 
-    bond_diff = abs(sum(m1struct) - sum(m2struct)) / 2
+    bond_diff = abs(sum(m1struct) - sum(m2struct)) // 2
     return bond_diff
 
 
