@@ -517,7 +517,7 @@ while True:
             for i, rotamer in enumerate(rotamers):
                 # Threading cannot be used with matplotlib without serious degredation to the
                 # saved plot's structure
-                save_structure(rotamer, output)
+                save_structure(rotamer, directory=output)
                 window["pbar"].update(i)
 
         # Reset progress bar
