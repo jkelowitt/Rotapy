@@ -510,12 +510,15 @@ while True:
                 }
                 kw.update(settings)
 
+                # Using threads results in a massive speed increase, for little to no work.
                 Thread(target=write_job_to_com, args=(molecule,), kwargs=kw, daemon=True).start()
                 window["pbar"].update_bar(i)
 
         if output := values["img_dir"]:
             window["p_text"]("Writing IMG")
             for i, rotamer in enumerate(rotamers):
+                # Threading cannot be used with matplotlib without serious degredation to the
+                # saved plot's structure
                 save_structure(rotamer, output)
                 window["pbar"].update(i)
 
