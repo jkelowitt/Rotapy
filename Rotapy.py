@@ -515,7 +515,7 @@ while True:
         if output := values["img_dir"]:
             window["p_text"]("Writing IMG")
             for i, rotamer in enumerate(rotamers):
-                # Threading cannot be used with matplotlib without serious degredation to the
+                # Threading cannot be used with matplotlib without serious degradation to the
                 # saved plot's structure
                 save_structure(rotamer, directory=output)
                 window["pbar"].update(i)
