@@ -108,6 +108,7 @@ def generate_rotamers(base_compound, rotation_queue, window):
     """Generate the rotamers and return the rotamers in Molecule form"""
     # Grab the progress bar and update it as we go
     window["p_text"]("Rotating")
+    window["pbar"].update_bar(0, rotamer_count)
 
     # This is the starting position of the compound. Free from any rotations
     rotamers = [deepcopy(base_compound)]
