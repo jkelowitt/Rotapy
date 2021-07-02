@@ -3,7 +3,7 @@
 @Start Date: May 14, 2021
 @Contact: jkelowitt@protonmail.com
 @Site: github.com/jkelowitt/Rotapy
-@Version: v2.2
+@Version: v2.1
 
 The end goal of this script is to be able to take in a Gaussian09 .log file,
 and allow the user to rotate specific elements of the contained molecule, and
