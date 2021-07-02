@@ -492,11 +492,11 @@ while True:
             window["pbar"].update_bar(i, rotamer_count)
 
         # Alert the user to the presence of bad rotamers
-        e_msg = f"{errored_out} rotamers had collisions while rotating. " \
-                f"The files were marked with '_#ERR', where ## is " \
-                f"the number of bonds different from the normal compound."
-
         if errored_out:
+            e_msg = f"{errored_out} rotamers had collisions while rotating. " \
+                    f"The files were marked with '_#ERR', where ## is " \
+                    f"the number of bonds different from the normal compound."
+
             # non_blocking is used so that this error message doesn't
             # prevent calculations from continuing when being run unattended.
             sg.popup_error(e_msg, title="Collisions Detected", keep_on_top=True, non_blocking=True)
