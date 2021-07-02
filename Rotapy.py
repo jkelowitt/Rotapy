@@ -19,6 +19,7 @@ Main Changes remaining:
 import winsound as ws
 from copy import deepcopy
 from math import ceil
+from threading import Thread
 from time import sleep
 
 import PySimpleGUI as sg
@@ -502,7 +503,13 @@ while True:
         if output := values["com_dir"]:
             window["p_text"]("Writing COM")
             for i, molecule in enumerate(rotamers):
-                write_job_to_com(molecule, title=molecule.name, directory=output, **settings)
+                kw = {
+                    "title": molecule.name,
+                    "directory": output,
+                }
+                kw.update(settings)
+
+                Thread(target=write_job_to_com, args=(molecule,), kwargs=kw, daemon=True).start()
                 window["pbar"].update_bar(i)
 
         if output := values["img_dir"]:
