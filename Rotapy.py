@@ -531,7 +531,7 @@ while True:
 
         # Alert the user to the completion of the calculation
         ws.MessageBeep()
-        sg.popup("Calculations Complete", keep_on_top=True)
+        sg.popup("All done!", keep_on_top=True)
 
     elif event == "change_settings":
         if x := settings_window(settings):
