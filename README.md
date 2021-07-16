@@ -10,77 +10,103 @@ Distance to the axis of rotation remains constant throughout the rotation.
 
 ### Usage
 
-This methyl group will be used as the example. Our goal is to make 6 rotomers with the Hydrogens shifted by 60 degrees
-from each other.
+To walk through how to use Rotapy, we will walk through the rotation of the alcohol group of ethanol.
 
-![Image](https://i.imgur.com/e2AES96.png)
+Start by opening Rotapy:
 
-1a. If running the python directly, place the .log files you wish to 'rotamate' into the root directory of Rotapy.py,
-and run Rotapy.py with python version >=3.6
+![Empty](https://puu.sh/HWOwv/23f6d24335.png)
 
-1b. If running the executable, place Rotapy.exe in the same location as the .log files you wish to rotamate, and run
-Rotapy.exe. When the terminal appears, you may need to press enter to get it started.
+In this area here, you can select a .com, .log, or .xyz file to analyze. This can be done by clicking Browse and finding
+the file, or by copying and pasting the absolute file path into the input box:
 
-2. The program will ask for the directory of a .log Gaussian geometry optimization output file.
+![Selecting Import Molecule Browse](https://puu.sh/HWOQT/f9f0e7468a.png)
 
+![With Import Molecule Text](https://puu.sh/HWOTI/5ef376a1d7.png)
 
-3. The program asks for an Anchor Atom. This is atom `1` as shown above.
+With the file selected, click on the "Show Molecule" button to view the molecule. This view is 3d projected into 2d, and
+doesn't have proper perspective. It is possible to rotate and view the molecule from different angles however.
 
+![Figure View](https://puu.sh/HWOUS/e7e9847d98.png)
 
-4. The program asks for a Center atom. This is atom `2` as shown above.
-    - The bond between the anchor and center atoms form the axis of rotation.
-    - The center atom and the anchor atom must be different atoms.
-    - The atoms attached to the center atom, `3, 4, 5`, will be rotated from their original position about the axis of
-      rotation.
+We will need to make note of two atoms. The anchor atom, assuming we are rotating the alcohol group, is atom 1. The
+center atom, the atom which has all the substituents we want to rotate, is atom 5.
 
+We can go back to the main rotapy window, and type in the number for the anchor atom in the anchor input, and the center
+atom into the center input.
 
-6. The program asks for an angle to scan through. To get rotomers with 60° increments, type `60`.
-    - This will make rotomers representing 0°, 60°, 120°, 180°, 240°, and 300°.
+![Center and Anchor Added](https://puu.sh/HWOWy/0643e4fbbd.png)
 
-    - Since 0° = 360°, the final rotamer is skipped.
+If we wanted to make rotamers of the 15 degree rotations of the alcohol group, we type 15 into the Angle input.
 
+![Angle Added](https://puu.sh/HWOXS/1e7d30d8e7.png)
 
-7. The program asks if we want to add more rotations. Type `n`.
-    - If we desired to generate rotamers of our rotamers, we would type `y` instead, repeating steps 2-5.
-    - Two rotations of 60° results in `6 * 6 = 36` final rotamers.
-    - Three rotations of 60°, plus one rotation of 10° results in `6 * 6 * 6 * 36 = 7,776` final rotamers.
-    - All possible combinations of rotamers are made.
+Once all three numbers are selected, clicking the "Add" button will add the rotation to the queue.
 
+![Add Selected](https://puu.sh/HWP0i/4d67d38399.png)
+![Added Alcohol Rotation](https://puu.sh/HWP1p/de55d56ab1.png)
 
-9. The program will ask if you want to save the rotamers to .com files, for processing, and will allow you to change the
-   parameters for the Gaussian analysis. The editable parameters are:
-    - title (Default: The name of the molecule as described below)
-    - charge (Default: 0)
-    - multiplicity (Default: 1)
-    - job (Default: Opt Freq)
-    - theory (Default: B3LPY)
-    - basis_set (Default: 6-311G(2df,2p))
-    - cores (Default: 8)
-    - memory (Default: 20gb)
-    - linda (Default: 1)
+Notice that the Total Rotamers has increased to 24. This means that in the end, there will be 24 rotamers made. If we
+add a rotation to the queue representing the methyl group being flipped 180 degrees, we can see the number of rotamers
+double.
 
+![Added Methyl Rotation](https://puu.sh/HWP8F/28593e9183.png)
 
-10. The program will ask if you want to save images of the rotamers to .png files.
+If we wanted to remove a rotation from the queue, we can click on the rotation in the queue, then click the "Remove"
+button.
 
+![Selected Methyl Rotation](https://puu.sh/HWP8g/5c6dfa2e87.png)
+![Removed Methyl Rotation](https://puu.sh/HWP3u/ea29d5f1b2.png)
 
-11. The program gives one final warning, then performs the saving of .com and .png files to designated directories.
+Now that we have all the rotations that we want added, we can prepare for getting output. If we want to have .com files
+as an output, a directory must be selected. If a directory is not in the input box, the .com files will not be
+generated. The same goes for the image files. Images of the rotamers will not be generated if the input box is empty. A
+path to the directory must be provided, either by pasting the absolute path to the directory, or by browsing to the
+directory.
 
-8. Once `n` is selected for step 6, the program performs, and prints out the name of each molecule in a specific format.
-   - `[compound_name]_a[anchor atom number]c[center atom number]d[current value of angle rotation]`
-   - For each rotation, another __a#-c#-##deg is appended to the rotamer name. For example:
-      - `terpineol4_a7c17d60_a7c27d170_a17c18d180`
-      - The compound Terpineol4 has:
-         - The atoms on the 17th atom rotated by 60° about the axis formed between the 7th and 17th atom.
-         - The atoms on the 27th atom rotated by 170° about the axis formed between the 7th and 27th atom.
-         - The atoms on the 18th atom rotated by 180° about the axis formed between the 17th and 18th atom.
+![Added Output Directories](https://puu.sh/HWPdN/76c8157022.png)
 
-## Work remaining
+Since both the Com and Img outputs both have a directory, .com and .png files will be generated for the rotamers.
 
-- Check that no bonds are formed during the rotation, and skip over the rotamer where they form.
-- A GUI. ["artist's" representation](https://puu.sh/HJ8K5/73b7ca6259.jpg)
+Now that we have the output locations, we can click the "Change Output Settings" button for more .com file output
+options.
+
+![Added Output Directories](https://puu.sh/HWPfg/3367a83cb4.png)
+
+From here you can change the charge, multiplicity, job, level of theory, basis set, the number of cores, the amount of
+memory, and the linda cores used. There is no validation for these inputs, so you may go through the process of rotating
+a ton of files, and end up with invalid option errors in Gaussian. If this happens,
+use [this program](https://github.com/jkelowitt/ConvertToCom) to generate new com files with different settings, without
+having to perform the rotation calculations again.
+
+There is also a setting called "Sequentially Name Files". If this setting is used, the files will be labelled, file_1,
+file_2, etc. If this setting is not checked off, the explicit rotations will be added to the file name instead. In the
+example of the methyl and alcohol group of ethanol being rotated, this would look like: ethanol_1a0c180d,
+ethanol_1a0c180d_1a5c30d, etc. 1a0c180d means, anchor atom 1, center atom 0, rotated 180 degrees. If there are multiple
+rotations in the same file name, they are listed. 1a0c180d_1a5c30d means that we rotate the methyl group 180 degrees,
+then the alcohol group 30 degrees. This results in very long file names, which is why this is not the default setting.
+
+The "Reset to Default" button will reset the values of the inputs to the settings shown above.
+
+Clicking the "Save" button will close the window, but will save the options you have chosen. The saved options are lost
+when Rotapy is closed, or the "Reset to Default" button is clicked.
+
+With the options selected, click the "Perform Calculations" button to execute the rotation queue.
+
+![Added Output Directories](https://puu.sh/HWPsS/bc48bc85fc.png)
+
+The progress bar will show what step Rotapy is working on, and how much progress is left. Once it has finished, Rotapy
+will pop up a message saying it is done.
+
+![Added Output Directories](https://puu.sh/HWPui/51532aa479.png)
+
+If given a directory, the com and image files will be contained within, named with the selected naming scheme, and
+formatted with the selected options.
+
+## Work remaining for me
+
 - Allow for individual rotations, rather than a scanned rotation.
 
-### References used in code
+## References used in code
 
 - https://github.com/tmpchem/computational_chemistry
 - https://github.com/matplotlib/matplotlib/issues/17172#issuecomment-830139107
